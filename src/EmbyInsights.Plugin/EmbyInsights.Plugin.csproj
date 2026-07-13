@@ -4,7 +4,7 @@
     <AssemblyName>EmbyInsights.Plugin</AssemblyName>
     <RootNamespace>EmbyInsights</RootNamespace>
     <Description>Admin playback analytics for Emby.</Description>
-    <Version>0.13.0.0</Version>
+    <Version>0.13.17.0</Version>
   </PropertyGroup>
 
   <!-- No PDB in the shipped DLL: a local build otherwise embeds an absolute pdb path
@@ -14,6 +14,12 @@
     <DebugSymbols>false</DebugSymbols>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>EmbyInsights.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
 
   <ItemGroup>
     <!-- Captured from the target Mini Emby beta container; never copy these to its plugin folder. -->

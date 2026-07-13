@@ -23,9 +23,7 @@
             .eiSection > summary::after { content: "▸"; transition: transform .15s ease; }
             .eiSection[open] > summary::after { transform: rotate(90deg); }
             .eiSection > .verticalSection { padding: .9em .2em .3em; }
-            .eiStatusGrid { display: grid; gap: .7em; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); margin: .8em 0; }
-            .eiStatusCard { background: #2c2c2e; border: 1px solid #3a3a3c; border-radius: 8px; padding: .85em 1em; }
-            .eiStatusCard strong { display: block; margin-bottom: .25em; }
+            .eiLibraryPicker { border-top:1px solid #3a3a3c; margin-top:1em; padding-top:1em; }.eiLibraryPicker>strong { display:block; margin-bottom:.25em; }.eiLibraryList { display:grid; gap:.55em; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); margin-top:.8em; }.eiLibraryOption { align-items:center; background:#2c2c2e; border:1px solid #3a3a3c; border-radius:8px; display:flex; gap:.65em; padding:.7em .8em; }.eiLibraryOption input { flex:0 0 auto; }
             .eiMuted { color: #aaa; font-size: .9em; }
             .eiModalBackdrop { align-items:center; background:rgba(0,0,0,.65); display:none; inset:0; justify-content:center; position:fixed; z-index:10000; }
             .eiModalBackdrop.open { display:flex; }
@@ -34,110 +32,126 @@
             .eiModalActions { display:flex; flex-wrap:wrap; gap:.5em; justify-content:flex-end; margin-top:1em; }
             .eiLog { background:#000; border-radius:6px; color:#ddd; font-family:monospace; line-height:1.4; max-height:52vh; overflow:auto; padding:1em; white-space:pre-wrap; word-break:break-word; }
             .eiReadme { line-height:1.5; white-space:pre-wrap; }
+            .eiReadmeIntro { color:#ccc; line-height:1.55; margin:.2em 0 1.2em; }
+            .eiReadmeGrid { display:grid; gap:.75em; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); }
+            .eiReadmeCard { background:#29292c; border:1px solid #3b3b3e; border-radius:9px; padding:1em; }
+            .eiReadmeCard strong { display:block; margin-bottom:.4em; }.eiReadmeCard p { color:#bbb; line-height:1.45; margin:0; }
         </style>
 
         <div class="eiHeader">
             <div class="eiIntro" style="margin:0;">
                 <h1 style="margin-bottom:.25em;">Emby Insights</h1>
-                <div class="fieldDescription">Moderne, nur für Administratoren sichtbare Wiedergabestatistiken.</div>
+                <div class="fieldDescription" data-i18n="intro">Moderne, nur für Administratoren sichtbare Wiedergabestatistiken.</div>
             </div>
             <div class="eiHeaderButtons">
-                <button is="emby-button" type="button" id="BtnReadme" class="raised">📖 Readme</button>
-                <button is="emby-button" type="button" id="BtnLogs" class="raised">📋 Logs</button>
-                <button is="emby-button" type="button" id="BtnInfo" class="raised">ℹ️ Info</button>
+                <button is="emby-button" type="button" id="BtnReadme" class="raised">📖 <span data-i18n="readme">Readme</span></button>
+                <button is="emby-button" type="button" id="BtnLogs" class="raised">📋 <span data-i18n="logs">Logs</span></button>
+                <button is="emby-button" type="button" id="BtnInfo" class="raised">ℹ️ <span data-i18n="info">Info</span></button>
             </div>
         </div>
 
         <form id="EmbyInsightsConfigForm">
             <details class="eiSection">
-                <summary>Datenerfassung</summary>
+                <summary data-i18n="trackingSection">Datenerfassung</summary>
                 <div class="verticalSection">
                     <label class="emby-checkbox-label">
                         <input is="emby-checkbox" type="checkbox" id="TrackingEnabled" />
-                        <span>Native Wiedergabeerfassung aktivieren</span>
+                        <span data-i18n="trackingEnabled">Native Wiedergabeerfassung aktivieren</span>
                     </label>
-                    <div class="fieldDescription">Erfasst neue Wiedergaben direkt über Emby Insights.</div>
+                    <div class="fieldDescription" data-i18n="trackingDescription">Erfasst neue Wiedergaben direkt über Emby Insights.</div>
 
                     <div class="inputContainer" style="margin-top:1em;">
-                        <input is="emby-input" type="number" id="MinimumPlaybackSeconds" min="0" max="3600" label="Mindestwiedergabedauer (Sekunden)" />
-                        <div class="fieldDescription">Kürzere Sitzungen werden nicht als Wiedergabe gespeichert.</div>
+                        <input is="emby-input" type="number" id="MinimumPlaybackSeconds" min="0" max="3600" label="Mindestwiedergabedauer (Sekunden)" data-i18n-label="minimumLabel" />
+                        <div class="fieldDescription" data-i18n="minimumDescription">Kürzere Sitzungen werden nicht als Wiedergabe gespeichert.</div>
                     </div>
 
                     <div class="inputContainer">
-                        <input is="emby-input" type="number" id="RetentionDays" min="0" max="36500" label="Aufbewahrung (Tage)" />
-                        <div class="fieldDescription">0 bewahrt Statistiken unbegrenzt auf.</div>
+                        <input is="emby-input" type="number" id="RetentionDays" min="0" max="36500" label="Aufbewahrung (Tage)" data-i18n-label="retentionLabel" />
+                        <div class="fieldDescription" data-i18n="retentionDescription">0 bewahrt Statistiken unbegrenzt auf.</div>
                     </div>
                 </div>
             </details>
 
             <details class="eiSection">
-                <summary>Datenquellen</summary>
+                <summary data-i18n="sourcesSection">Datenquellen</summary>
                 <div class="verticalSection">
                     <label class="emby-checkbox-label">
                         <input is="emby-checkbox" type="checkbox" id="PlaybackReportingEnabled" />
-                        <span>Playback Reporting verwenden</span>
+                        <span data-i18n="playbackReportingEnabled">Playback Reporting verwenden</span>
                     </label>
-                    <div class="fieldDescription">Importiert vorhandene Wiedergaben ausschließlich lesend und speichert sie normalisiert in Emby Insights.</div>
+                    <div class="fieldDescription" data-i18n="playbackReportingDescription">Liest vorhandene Wiedergaben aus Playback Reporting. Wird der Schalter deaktiviert, werden diese Daten nicht mehr in Insights verwendet.</div>
 
-                    <label class="emby-checkbox-label" style="margin-top:1em;">
-                        <input is="emby-checkbox" type="checkbox" id="StatisticsSourceEnabled" />
-                        <span>Statistics als ergänzende Quelle verwenden</span>
-                    </label>
-                    <div class="fieldDescription">Standardmäßig deaktiviert, bis die verfügbaren Felder der installierten Version geprüft wurden.</div>
-
-                    <div class="eiStatusGrid">
-                        <div class="eiStatusCard"><strong>Playback Reporting</strong><span class="eiMuted">Status wird mit dem Provider-Endpunkt verbunden.</span></div>
-                        <div class="eiStatusCard"><strong>Statistics</strong><span class="eiMuted">Optionale ergänzende Datenquelle.</span></div>
+                    <div class="eiLibraryPicker">
+                        <strong data-i18n="librarySelection">Bibliotheken für Insights</strong>
+                        <div class="fieldDescription" data-i18n="librarySelectionDescription">Nur Medien aus den ausgewählten Bibliotheken werden in Statistiken und Server-Fakten berücksichtigt.</div>
+                        <div id="LibrarySelection" class="eiLibraryList"><span class="eiMuted" data-i18n="loading">Lädt…</span></div>
                     </div>
                 </div>
             </details>
 
             <details class="eiSection">
-                <summary>Darstellung</summary>
+                <summary data-i18n="displaySection">Darstellung</summary>
                 <div class="verticalSection">
                     <div class="selectContainer">
-                        <select is="emby-select" id="Language" label="Sprache / Language">
+                        <select is="emby-select" id="Language" label="Sprache / Language" data-i18n-label="languageLabel">
                             <option value="de">Deutsch</option>
                             <option value="en">English</option>
                         </select>
-                        <div class="fieldDescription">Sprache der Seiten „Server Facts“ und „User Facts“.</div>
+                        <div class="fieldDescription" data-i18n="languageDescription">Sprache der Statistik- und Einstellungsseiten.</div>
+                    </div>
+                    <div class="selectContainer" style="margin-top:1em;">
+                        <select is="emby-select" id="Theme" label="Design" data-i18n-label="themeLabel">
+                            <option value="emerald" data-i18n="themeEmerald">Emerald</option>
+                            <option value="terminal" data-i18n="themeTerminal">Terminal Grid</option>
+                        </select>
+                        <div class="fieldDescription" data-i18n="themeDescription">Wählt das Erscheinungsbild des Insights-Tabs.</div>
                     </div>
                 </div>
             </details>
 
             <details class="eiSection">
-                <summary>Browser-Erweiterung</summary>
+                <summary data-i18n="browserSection">Browser-Erweiterung</summary>
                 <div class="verticalSection">
                     <label class="emby-checkbox-label">
                         <input is="emby-checkbox" type="checkbox" id="EnableWebClientExtension" />
-                        <span>Admin-Tab „Statistiken“ aktivieren</span>
+                        <span data-i18n="browserEnabled">Admin-Tab „Insights“ aktivieren</span>
                     </label>
-                    <div class="fieldDescription">Der Tab wird später ausschließlich für Administratoren im Browser eingeblendet.</div>
-                    <button is="emby-button" type="button" id="BtnOpenStatistics" class="raised" style="margin-top:1em;">Statistiken öffnen</button>
+                    <div class="fieldDescription" data-i18n="browserDescription">Der Tab wird ausschließlich für Administratoren im Browser eingeblendet.</div>
+                    <button is="emby-button" type="button" id="BtnOpenStatistics" class="raised" style="margin-top:1em;" data-i18n="openStatistics">Insights öffnen</button>
                 </div>
             </details>
 
             <div class="verticalSection" style="margin-top:1em;">
                 <button is="emby-button" type="submit" class="raised button-submit block">
-                    <span>Speichern</span>
+                    <span data-i18n="save">Speichern</span>
                 </button>
             </div>
         </form>
     </div>
 
     <div id="ReadmeModal" class="eiModalBackdrop"><div class="eiModal">
-        <h2>📖 Emby Insights – Readme</h2><div id="ReadmeBody" class="eiReadme">Lädt…</div>
-        <div class="eiModalActions"><button is="emby-button" type="button" data-close="ReadmeModal" class="raised">Schließen</button></div>
+        <h2>📖 Emby Insights</h2>
+        <p class="eiReadmeIntro" data-i18n="readmeIntro">Wiedergabestatistiken für Emby-Administratoren – übersichtlich, direkt im Webclient und ohne Playback Reporting zu verändern.</p>
+        <div class="eiReadmeGrid">
+            <div class="eiReadmeCard"><strong data-i18n="readmeShowsTitle">Was wird angezeigt?</strong><p data-i18n="readmeShowsText">Wiedergabezeit, beliebte Filme und Serien, aktive Nutzer, Clients und Wiedergabemethoden.</p></div>
+            <div class="eiReadmeCard"><strong data-i18n="readmeSourceTitle">Woher kommen die Daten?</strong><p data-i18n="readmeSourceText">Aktuell aus der Playback-Reporting-Datenbank. Sie wird ausschließlich gelesen.</p></div>
+            <div class="eiReadmeCard"><strong data-i18n="readmeAccessTitle">Wer kann die Daten sehen?</strong><p data-i18n="readmeAccessText">Nur Emby-Administratoren können den Statistik-Tab und seine Schnittstellen öffnen.</p></div>
+        </div>
+        <div class="eiModalActions"><button is="emby-button" type="button" data-close="ReadmeModal" class="raised" data-i18n="close">Schließen</button></div>
     </div></div>
     <div id="LogsModal" class="eiModalBackdrop"><div class="eiModal">
-        <h2>📋 Emby Insights Logs</h2><pre id="LogsBody" class="eiLog">Lädt…</pre>
-        <div class="eiModalActions"><button is="emby-button" type="button" id="BtnRefreshLogs" class="raised">Aktualisieren</button><button is="emby-button" type="button" data-close="LogsModal" class="raised">Schließen</button></div>
+        <h2>📋 Emby Insights Logs</h2><pre id="LogsBody" class="eiLog" data-loading>Lädt…</pre>
+        <div class="eiModalActions"><button is="emby-button" type="button" id="BtnRefreshLogs" class="raised" data-i18n="refresh">Aktualisieren</button><button is="emby-button" type="button" data-close="LogsModal" class="raised" data-i18n="close">Schließen</button></div>
     </div></div>
     <div id="InfoModal" class="eiModalBackdrop"><div class="eiModal">
         <h2>ℹ️ Emby Insights</h2>
-        <p><strong>Version 0.13.0.0</strong></p>
-        <p>Admin-Dashboard für Wiedergabeaktivität. Emby Insights führt native Sitzungen und optionale, ausschließlich lesend verwendete Datenquellen in einer eigenen Datenbasis zusammen.</p>
-        <p>Playback Reporting wird niemals von Emby Insights verändert.</p>
-        <div class="eiModalActions"><button is="emby-button" type="button" data-close="InfoModal" class="raised">Schließen</button></div>
+        <p data-i18n="infoDescription">Emby Insights zeigt Administratoren auf einen Blick, was auf dem Emby-Server angesehen wurde – zum Beispiel Wiedergabezeit, beliebte Filme und Serien sowie aktive Benutzer. Playback Reporting wird dabei nur gelesen und nicht verändert.</p>
+        <hr>
+        <h3 data-i18n="latestChanges">Letzte Änderungen</h3>
+        <p><strong>Version 0.13.17.0</strong></p>
+        <ul>
+            <li data-i18n="changeUncroppedBackdrops">Backdrop-Bilder werden vollständig und unbeschnitten über einem weichgezeichneten, kachelfüllenden Hintergrund dargestellt.</li>
+        </ul>
+        <div class="eiModalActions"><button is="emby-button" type="button" data-close="InfoModal" class="raised" data-i18n="close">Schließen</button></div>
     </div></div>
 </div>

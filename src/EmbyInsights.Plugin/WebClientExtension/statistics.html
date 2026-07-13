@@ -3,70 +3,83 @@
      data-horizontal="false"
      data-forcescrollbar="true"
      data-controller="__plugin/EmbyInsightsStatisticsJs"
-     data-title="Statistiken">
+     data-title="Insights">
   <div class="scrollSlider flex-grow flex-direction-column">
     <style>
       .eiDashboard { --accent:#52b788; --card:#192024; --muted:#9aa7ad; min-height:100%; padding:clamp(1.2rem,4vw,3rem); color:#f7faf9; background:radial-gradient(circle at 82% 0,#18392f 0,transparent 34%),#101416; box-sizing:border-box; }
-      .eiDashHeader,.eiPanelTitle { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+      .eiPanelTitle { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
       .eiEyebrow { color:var(--accent); letter-spacing:.12em; text-transform:uppercase; font-size:.72rem; margin:0; }
-      .eiDashHeader .eiEyebrow { font-size:1rem; font-weight:700; letter-spacing:.16em; }
+      .eiBrand { justify-self:center; text-align:center; white-space:nowrap; }.eiBrand .eiEyebrow { font-size:1rem; font-weight:700; letter-spacing:.16em; }
+      .eiVersionLine { color:#7f9189; display:block; font-size:.75rem; margin-top:.3rem; }
       .eiDashHeader h1 { font-size:clamp(2rem,5vw,3.4rem); margin:.2rem 0 0; }
-      .eiRange { display:flex; padding:.3rem; border-radius:999px; background:#20282c; }
-      .eiRange button { border:0; border-radius:999px; padding:.65rem 1rem; color:var(--muted); background:transparent; cursor:pointer; }
-      .eiRange button.active { color:#07110d; background:var(--accent); }
-      .eiServerBadge { display:none; padding:.65rem 1.1rem; border-radius:999px; color:#d7eee3; background:linear-gradient(135deg,#245b49,#1a3b32); border:1px solid #74c69d44; font-weight:600; }
-      .eiDashboard.eiHighlightsMode .eiRange { display:none; }.eiDashboard.eiHighlightsMode .eiServerBadge { display:block; }
-      .eiMetrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1rem; margin:2rem 0 1rem; }
-      .eiMetric,.eiPanel { border:1px solid #ffffff0d; border-radius:1rem; background:linear-gradient(145deg,#1d262a,#161c1f); box-shadow:0 1rem 3rem #0003; }
-      .eiMetric { padding:1.25rem; }.eiMetric strong { display:block; font-size:clamp(1.45rem,3vw,2rem); }.eiMetric span,.eiPanelTitle span,.eiEmpty { color:var(--muted); }
+      .eiTotals { display:flex; gap:.55rem; }.eiTotalPill { align-items:center; background:#20282c; border:1px solid #ffffff0d; border-radius:999px; color:#aebbb5; display:flex; gap:.45rem; padding:.6rem .9rem; white-space:nowrap; }.eiTotalPill strong { color:#fff; font-size:1.05rem; }.eiTotalPill:first-child strong { color:#74c69d; }.eiTotalPill:last-child strong { color:#ff92bb; }
+      .eiPanel { border:1px solid #ffffff0d; border-radius:1rem; background:linear-gradient(145deg,#1d262a,#161c1f); box-shadow:0 1rem 3rem #0003; }
+      .eiPanelTitle span,.eiEmpty { color:var(--muted); }
       .eiPanel { padding:1.25rem; margin-top:1rem; }.eiPanel h2 { margin:0 0 1rem; }
-      .eiContentGrid { display:grid; grid-template-columns:2fr 1fr; gap:1rem; }
-      .eiChart { height:15rem; display:flex; align-items:flex-end; gap:max(.25rem,1vw); padding:1rem .25rem 0; overflow:hidden; }
-      .eiBarColumn { flex:1; min-width:8px; height:100%; display:flex; align-items:center; justify-content:flex-end; flex-direction:column; gap:.45rem; }
-      .eiBar { width:100%; max-width:34px; min-height:2px; border-radius:6px 6px 2px 2px; background:linear-gradient(180deg,#74c69d,var(--accent)); transition:height .25s ease; }
-      .eiBarLabel { color:var(--muted); font-size:.68rem; white-space:nowrap; }
       .eiTopMeta { color:var(--muted); font-size:.82rem; }
       .eiError { color:#ff8a80; padding:1rem; }
-      .eiDataRow { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:.8rem; padding:.75rem 0; border-bottom:1px solid #ffffff0d; align-items:center; }
-      .eiDataRow:last-child { border:0; }.eiDataRow strong { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }.eiDataValue { color:var(--accent); font-weight:700; white-space:nowrap; }
-      .eiMethodBar { background:#293236; border-radius:999px; height:.38rem; margin-top:.45rem; overflow:hidden; }.eiMethodBar span { background:var(--accent); display:block; height:100%; border-radius:inherit; }
+      .eiFactsBento { display:grid; gap:1rem; grid-template-columns:repeat(12,minmax(0,1fr)); margin-top:1rem; }
+      .eiFactsBento>.eiPanel { margin-top:0; }.eiDirectKing { grid-column:span 7; }.eiTranscodeKing { grid-column:span 5; }.eiRankingPanel,.eiActivityPanel,.eiTranscodeClientsPanel { grid-column:span 4; }
+      .eiKingCard { align-items:center; border:0; display:grid; gap:1.2rem; grid-template-columns:auto minmax(0,1fr) auto; min-height:8.5rem; overflow:hidden; position:relative; }
+      .eiKingCard::after { border-radius:50%; content:""; filter:blur(4px); height:10rem; opacity:.35; position:absolute; right:-3rem; top:-4rem; width:10rem; }
+      .eiDirectKing { background:linear-gradient(135deg,#173d31,#215a46); box-shadow:0 1.2rem 3rem #0c271f66; }.eiDirectKing::after { background:#65e6ad; }
+      .eiTranscodeKing { background:linear-gradient(135deg,#442634,#6b3049); box-shadow:0 1.2rem 3rem #35132166; }.eiTranscodeKing::after { background:#ff7cae; }
+      .eiCrown { font-size:2rem; left:.7rem; position:absolute; top:.35rem; transform:rotate(-12deg); }.eiKingAvatar { align-items:center; border:3px solid #ffffff55; border-radius:50%; color:#fff; display:flex; font-size:1.1rem; font-weight:900; height:4.8rem; justify-content:center; text-shadow:0 1px 4px #000; width:4.8rem; }
+      .eiKingCopy { position:relative; z-index:1; }.eiKingCopy small { color:#ffffffb8; font-size:.72rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }.eiKingCopy h2 { font-size:1.65rem; margin:.25rem 0 0; }.eiKingCount { color:#fff; font-size:1.7rem; font-weight:900; position:relative; text-align:right; z-index:1; }.eiKingCount span { color:#ffffffa8; display:block; font-size:.7rem; font-weight:600; }
+      .eiUserTiles { display:grid; gap:.65rem; grid-template-columns:1fr; }.eiUserRow { align-items:center; background:#20282c; border:1px solid #ffffff0a; border-radius:.8rem; display:grid; gap:.7rem; grid-template-columns:minmax(0,1fr) auto; padding:.75rem; }.eiUserRow.featured { background:linear-gradient(135deg,#4a3b19,#25302b); border-color:#ffdb7140; padding-left:3rem; position:relative; }.eiUserRow.featured::before { content:"👑"; font-size:1.35rem; left:.85rem; position:absolute; top:50%; transform:translateY(-50%) rotate(-10deg); }
+      .eiUserIdentity { align-items:center; display:flex; gap:.75rem; min-width:0; }
+      .eiUserMiniAvatar { align-items:center; border-radius:50%; color:white; display:flex; flex:0 0 2.65rem; font-size:.75rem; font-weight:800; height:2.65rem; justify-content:center; box-shadow:inset 0 0 0 2px #ffffff24; text-shadow:0 1px 3px #000; }
+      .eiUserName { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }.eiUserStats { min-width:0; }
+      .eiPlaybackSplit { background:#3b2525; border-radius:999px; display:flex; height:.35rem; margin-top:.4rem; overflow:hidden; }.eiPlaybackSplit span { background:#52b788; height:100%; }
+      .eiUserTotals { text-align:right; white-space:nowrap; }.eiUserTotals strong { color:var(--accent); display:block; }.eiDemoBadge { background:#735c20; border-radius:999px; color:#ffe7a0; font-size:.7rem; padding:.25rem .55rem; }
+      .eiWatchClientList { display:grid; gap:.55rem; }.eiWatchClientRow { align-items:center; background:#20282c; border-radius:.75rem; display:grid; gap:.65rem; grid-template-columns:minmax(0,1fr) auto; padding:.7rem .8rem; }.eiWatchClientRow strong { display:block; }.eiWatchClientRow:first-child { background:linear-gradient(135deg,#5c4619,#332b1d); border:1px solid #ffd86b44; box-shadow:0 .7rem 1.8rem #0003; padding:1rem; }.eiWatchClientRow:first-child strong { color:#ffe08a; font-size:1.05rem; }.eiWatchClientName { align-items:center; display:flex; gap:.5rem; min-width:0; }.eiWatchClientCrown { display:none; }.eiWatchClientRow:first-child .eiWatchClientCrown { display:inline; font-size:1.2rem; }.eiWatchClientTime { color:var(--accent); font-weight:800; white-space:nowrap; }.eiTranscodeClientList .eiWatchClientTime { color:#ff92bb; }
       .eiSubnav { display:flex; gap:.35rem; margin-top:1.4rem; padding:.3rem; width:max-content; border-radius:999px; background:#20282c; }
       .eiSubnav button { border:0; border-radius:999px; padding:.7rem 1.25rem; color:var(--muted); background:transparent; cursor:pointer; }.eiSubnav button.active { background:#f4f7f6; color:#111; }
-      .eiToolbar { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-top:1.4rem; }.eiToolbar .eiSubnav { margin-top:0; }
+      .eiToolbar { align-items:center; display:grid; gap:1rem; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); }.eiToolbar .eiSubnav { justify-self:start; margin-top:0; }.eiToolbar .eiTotals { justify-self:end; }
       .eiPage[hidden] { display:none !important; }
       .eiHighlightSummary { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:1px; margin-top:1.4rem; border:1px solid #ffffff14; border-radius:1.1rem; overflow:hidden; background:linear-gradient(110deg,#153c31 0%,#192c29 25%,#192427 58%,#171e22 100%); box-shadow:0 1rem 3rem #0003,0 0 4rem #2d8d6812; }
-      .eiSummaryLead,.eiSummaryStat { min-height:7.5rem; padding:1.2rem 2rem; background:linear-gradient(145deg,#ffffff08,#00000012); display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; position:relative; }
+      .eiSummaryLead,.eiSummaryStat { min-height:9rem; padding:1.8rem 2.2rem; background:linear-gradient(145deg,#ffffff08,#00000012); display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; position:relative; }
       .eiSummaryStat::before { content:""; position:absolute; left:0; top:1.1rem; bottom:1.1rem; width:3px; border-radius:999px; background:var(--accent); box-shadow:0 0 1rem #52b788aa; }
-      .eiSummaryLead strong,.eiSummaryStat strong { font-size:clamp(1.8rem,4vw,3rem); line-height:1; }.eiSummaryLead span,.eiSummaryStat span { color:#b4c4bd; font-size:.85rem; margin-top:.45rem; }.eiSummaryStat .eiEyebrow { margin-bottom:.45rem; }.eiSummaryStat strong .eiPrimaryValue { color:#fff; font-size:inherit; margin:0; }.eiSummaryStat strong .eiSubValue { color:#81928b; font-size:.82em; margin:0; }.eiSummaryStat strong .eiValueDivider { color:#64736d; font-size:.7em; margin:0 .08em; }
-      .eiSecondaryFacts { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; margin-top:1rem; }.eiSecondaryFact { position:relative; padding:1.2rem 2rem; border:1px solid #ffffff12; border-radius:1rem; background:linear-gradient(135deg,#1b2828,#171e21); box-shadow:0 .8rem 2rem #0002; text-align:center; }.eiSecondaryFact strong { display:block; font-size:1.8rem; margin:.4rem 0 .2rem; }.eiSecondaryFact span { color:var(--muted); }
-      .eiHighlightGrid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; margin-top:1rem; }
-      .eiFeatureCard { position:relative; min-height:19rem; border-radius:1rem; overflow:hidden; background:#1a2226; border:1px solid #ffffff0d; }
-      .eiFeatureImage { width:100%; height:100%; position:absolute; inset:0; object-fit:cover; }.eiFeatureShade { position:absolute; inset:0; background:linear-gradient(180deg,transparent 30%,rgba(4,9,7,.96)); }
-      .eiFeatureContent { position:absolute; left:1.2rem; right:1.2rem; bottom:1.2rem; z-index:1; }.eiFeatureContent small { color:var(--accent); text-transform:uppercase; letter-spacing:.1em; }.eiFeatureContent h2 { margin:.3rem 0; font-size:1.5rem; }.eiFeatureContent p { margin:0; color:#ccd5d1; }
+      .eiSummaryLead strong,.eiSummaryStat strong { font-size:clamp(1.8rem,4vw,3rem); line-height:1; margin:.65rem 0 .2rem; }.eiSummaryLead span,.eiSummaryStat span { color:#b4c4bd; font-size:.85rem; margin-top:.65rem; }.eiSummaryStat .eiEyebrow { margin-bottom:.1rem; }.eiSummaryStat strong .eiPrimaryValue { color:#fff; font-size:inherit; margin:0; }.eiSummaryStat strong .eiSubValue { color:#81928b; font-size:.82em; margin:0; }.eiSummaryStat strong .eiValueDivider { color:#64736d; font-size:.7em; margin:0 .08em; }
+      .eiSecondaryFacts { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1rem; margin-top:1rem; }.eiSecondaryFact { position:relative; padding:1.5rem 2rem; border:1px solid #ffffff12; border-radius:1rem; background:linear-gradient(135deg,#1b2828,#171e21); box-shadow:0 .8rem 2rem #0002; text-align:center; }.eiSecondaryFact strong { display:block; font-size:1.8rem; margin:.55rem 0 .35rem; }.eiSecondaryFact span { color:var(--muted); }
+      .eiHighlightGrid { align-items:start; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; margin-top:1rem; }
+      .eiFeatureCard { position:relative; isolation:isolate; aspect-ratio:16/9; min-height:0; border-radius:1rem; overflow:hidden; background:radial-gradient(circle at 50% 35%,#24332d,#101513 72%); border:1px solid #ffffff0d; }
+      .eiFeatureCard::before { background-image:var(--ei-feature-background,none); background-position:center; background-size:cover; content:""; filter:blur(18px) saturate(.72); inset:-1.5rem; opacity:.55; position:absolute; transform:scale(1.08); z-index:0; }
+      .eiFeatureImage { width:100%; height:100%; position:absolute; inset:0; object-fit:contain; object-position:center; z-index:1; }.eiFeatureShade { position:absolute; inset:0; background:linear-gradient(180deg,transparent 42%,rgba(4,9,7,.97)); z-index:2; }
+      .eiFeatureContent { position:absolute; left:1.2rem; right:1.2rem; bottom:1.2rem; z-index:3; }.eiFeatureContent small { color:var(--accent); text-transform:uppercase; letter-spacing:.1em; }.eiFeatureContent h2 { margin:.3rem 0; font-size:1.5rem; }.eiFeatureContent p { margin:0; color:#ccd5d1; }
       .eiUserCard { display:grid; place-items:center; text-align:center; background:radial-gradient(circle at 50% 12%,#284b40 0,transparent 45%),linear-gradient(145deg,#1d262a,#161c1f); }
-      .eiUserContent { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; padding:2rem 1.2rem; }
-      .eiUserAvatar { width:7rem; height:7rem; border-radius:50%; object-fit:cover; background:#31413b; border:4px solid #ffffff24; box-shadow:0 .8rem 2rem #0006; margin-bottom:1rem; }
+      .eiUserContent { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; padding:1rem; }
+      .eiUserAvatar { width:5rem; height:5rem; border-radius:50%; object-fit:cover; background:#31413b; border:4px solid #ffffff24; box-shadow:0 .8rem 2rem #0006; margin-bottom:.6rem; }
       .eiUserContent small { color:var(--accent); text-transform:uppercase; letter-spacing:.1em; }.eiUserContent h2 { margin:.35rem 0; font-size:1.8rem; }.eiUserContent p { margin:0; color:#ccd5d1; }
-      @media(max-width:850px){.eiMetrics{grid-template-columns:repeat(2,1fr)}.eiContentGrid,.eiHighlightGrid,.eiSecondaryFacts{grid-template-columns:1fr}.eiHighlightSummary{grid-template-columns:repeat(2,1fr)}.eiDashHeader{align-items:flex-start;flex-direction:column}.eiToolbar{align-items:flex-start;flex-direction:column}.eiRange{max-width:100%;overflow:auto}}
+      .eiThemeTerminal { --accent:#52b54b; --muted:#8f9990; background-color:#0d0f0d; background-image:linear-gradient(#29302966 1px,transparent 1px),linear-gradient(90deg,#29302966 1px,transparent 1px); background-size:54px 54px; color:#e8ece8; font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace; }
+      .eiThemeTerminal .eiPanel,.eiThemeTerminal .eiHighlightSummary,.eiThemeTerminal .eiSecondaryFact,.eiThemeTerminal .eiFeatureCard,.eiThemeTerminal .eiTotalPill,.eiThemeTerminal .eiSubnav { background:#111411f2; border:1px solid #394139; border-radius:2px; box-shadow:none; }
+      .eiThemeTerminal .eiSummaryLead,.eiThemeTerminal .eiSummaryStat { background:#111411e8; }
+      .eiThemeTerminal .eiSummaryStat::before { border-radius:0; box-shadow:none; width:2px; }
+      .eiThemeTerminal .eiDirectKing,.eiThemeTerminal .eiTranscodeKing { background:linear-gradient(135deg,#121812f5,#172117f5); border:1px solid #4b5a4b; box-shadow:none; }
+      .eiThemeTerminal .eiDirectKing::after,.eiThemeTerminal .eiTranscodeKing::after { background:var(--accent); opacity:.12; }
+      .eiThemeTerminal .eiTotalPill:first-child strong,.eiThemeTerminal .eiTotalPill:last-child strong,.eiThemeTerminal .eiWatchClientTime,.eiThemeTerminal .eiTranscodeClientList .eiWatchClientTime { color:var(--accent); }
+      .eiThemeTerminal .eiUserRow,.eiThemeTerminal .eiWatchClientRow { background:#151915f2; border:1px solid #303830; border-radius:1px; }
+      .eiThemeTerminal .eiUserRow.featured,.eiThemeTerminal .eiWatchClientRow:first-child { background:linear-gradient(135deg,#172317f5,#111511f5); border-color:#52b54b88; box-shadow:none; }
+      .eiThemeTerminal .eiWatchClientRow:first-child strong { color:var(--accent); }
+      .eiThemeTerminal .eiPlaybackSplit { background:#293029; border-radius:0; }.eiThemeTerminal .eiPlaybackSplit span { background:var(--accent); }
+      .eiThemeTerminal .eiSubnav { padding:.25rem; }.eiThemeTerminal .eiSubnav button { border-radius:1px; font-family:inherit; }.eiThemeTerminal .eiSubnav button.active { background:#52b54b; color:#071007; }
+      .eiThemeTerminal .eiFeatureShade { background:linear-gradient(180deg,#0710070d 20%,#071007f2); }
+      .eiThemeTerminal .eiFeatureImage { filter:saturate(.72) contrast(1.06); }
+      .eiThemeTerminal .eiKingAvatar,.eiThemeTerminal .eiUserMiniAvatar,.eiThemeTerminal .eiUserAvatar { border-color:#52b54b88; box-shadow:none; }
+      .eiThemeTerminal .eiSummaryLead>span::before,.eiThemeTerminal .eiSummaryStat>span::before,.eiThemeTerminal .eiSecondaryFact>span::before,.eiThemeTerminal .eiTotalPill>span::before,.eiThemeTerminal .eiKingCount>span::before,.eiThemeTerminal .eiTopMeta::before,.eiThemeTerminal .eiFeatureContent>small::before,.eiThemeTerminal .eiKingCopy>small::before,.eiThemeTerminal .eiPanelTitle>h2::before { content:"[ "; color:var(--accent); }
+      .eiThemeTerminal .eiSummaryLead>span::after,.eiThemeTerminal .eiSummaryStat>span::after,.eiThemeTerminal .eiSecondaryFact>span::after,.eiThemeTerminal .eiTotalPill>span::after,.eiThemeTerminal .eiKingCount>span::after,.eiThemeTerminal .eiTopMeta::after,.eiThemeTerminal .eiFeatureContent>small::after,.eiThemeTerminal .eiKingCopy>small::after,.eiThemeTerminal .eiPanelTitle>h2::after { content:" ]"; color:var(--accent); }
+      .eiThemeTerminal .eiEyebrow,.eiThemeTerminal .eiVersionLine { color:var(--accent); }
+      @media(max-width:850px){.eiHighlightGrid,.eiSecondaryFacts{grid-template-columns:1fr}.eiHighlightSummary{grid-template-columns:repeat(2,1fr)}.eiToolbar{align-items:flex-start;display:flex;flex-direction:column}.eiBrand{align-self:center;order:-1}.eiTotals{flex-wrap:wrap}.eiUserCard{aspect-ratio:auto;min-height:15rem}.eiFactsBento>*{grid-column:1/-1!important}.eiUserTiles{grid-template-columns:1fr}.eiUserRow.featured{grid-column:span 1}.eiKingCard{grid-template-columns:auto minmax(0,1fr)}.eiKingCount{grid-column:2;text-align:left}}
     </style>
 
     <div class="eiDashboard eiHighlightsMode">
-      <header class="eiDashHeader">
-        <div><p class="eiEyebrow">Emby Insights</p></div>
-      </header>
-
       <div class="eiToolbar">
         <nav class="eiSubnav" aria-label="Statistikbereich">
           <button type="button" class="active" data-page="highlights" data-i18n="serverFacts">Server-Fakten</button>
           <button type="button" data-page="technical" data-i18n="userFacts">Nutzer-Fakten</button>
         </nav>
-        <div class="eiServerBadge" id="ServerVersionBadge">Emby</div>
-        <div class="eiRange" role="group" aria-label="Zeitraum">
-          <button is="emby-button" data-range="7d" data-i18n="days7">7 Tage</button>
-          <button is="emby-button" data-range="30d" data-i18n="days30">30 Tage</button>
-          <button is="emby-button" data-range="year" data-i18n="year">Jahr</button>
-          <button is="emby-button" class="active" data-range="all" data-i18n="all">Gesamt</button>
-        </div>
+        <div class="eiBrand"><p class="eiEyebrow">Emby Insights</p><span class="eiVersionLine" id="EmbyVersionLine">Emby –</span></div>
+        <div class="eiTotals"><div class="eiTotalPill">👥 <strong id="TotalUsers">–</strong><span data-i18n="usersTotal">Nutzer insgesamt</span></div><div class="eiTotalPill">📺 <strong id="TotalClients">–</strong><span data-i18n="clientsTotal">Clients insgesamt</span></div></div>
       </div>
 
       <main id="HighlightsPage" class="eiPage">
@@ -75,12 +88,13 @@
           <article class="eiSummaryStat"><p class="eiEyebrow" data-i18n="movieArchive">Filme</p><strong id="HighlightMovies">–</strong><span data-i18n="moviesOnServer">Filme auf dem Server</span></article>
           <article class="eiSummaryStat"><p class="eiEyebrow" data-i18n="seriesWorld">Serien</p><strong><span id="HighlightSeries" class="eiPrimaryValue">–</span><span class="eiValueDivider"> / </span><span id="HighlightEpisodes" class="eiSubValue">–</span></strong><span data-i18n="seriesEpisodes">Serien · Episoden</span></article>
           <article class="eiSummaryStat"><p class="eiEyebrow" data-i18n="musicCollection">Musiksammlung</p><strong><span id="HighlightAlbums" class="eiPrimaryValue">–</span><span class="eiValueDivider"> / </span><span id="HighlightSongs" class="eiSubValue">–</span></strong><span data-i18n="albumsTracks">Alben · Titel</span></article>
-          <article class="eiSummaryStat"><p class="eiEyebrow" data-i18n="mediaStorage">Speicherplatz</p><strong id="HighlightStorage">–</strong><span data-i18n="librarySize">Bibliotheksgröße</span></article>
+          <article class="eiSummaryStat"><p class="eiEyebrow" data-i18n="librarySize">Bibliotheksgröße</p><strong id="HighlightStorage">–</strong><span data-i18n="mediaStorage">Speicherplatz</span></article>
         </section>
         <section class="eiSecondaryFacts" aria-label="Weitere Server-Fakten">
           <article class="eiSecondaryFact"><p class="eiEyebrow" data-i18n="apiKeys">API-Schlüssel</p><strong id="HighlightApiKeys">–</strong><span data-i18n="createdApiKeys">erstellte Schlüssel</span></article>
           <article class="eiSecondaryFact"><p class="eiEyebrow" data-i18n="completedDownloads">Abgeschlossene Downloads</p><strong id="HighlightDownloads">–</strong><span data-i18n="offlineItems">vollständig übertragene Offline-Medien</span></article>
           <article class="eiSecondaryFact"><p class="eiEyebrow" data-i18n="totalWatchTime">Gesamtwiedergabezeit</p><strong id="HighlightWatchTime">–</strong><span data-i18n="allUsers">alle Nutzer</span></article>
+          <article class="eiSecondaryFact"><p class="eiEyebrow" data-i18n="backups">Backups</p><strong id="HighlightBackups">–</strong><span id="HighlightBackupMeta">Noch kein Backup</span></article>
         </section>
         <section class="eiHighlightGrid">
           <article class="eiFeatureCard" id="TopMovieCard"><img class="eiFeatureImage" id="TopMovieImage" alt=""><div class="eiFeatureShade"></div><div class="eiFeatureContent"><small data-i18n="topMovie">Top-Film</small><h2 id="TopMovieName" data-i18n="noData">Noch keine Daten</h2><p id="TopMovieMeta"></p></div></article>
@@ -90,14 +104,12 @@
       </main>
 
       <main id="TechnicalPage" class="eiPage" hidden>
-        <section class="eiMetrics" id="InsightsMetrics" aria-live="polite"></section>
-        <section class="eiPanel">
-          <div class="eiPanelTitle"><h2 data-i18n="activity">Aktivität</h2><span data-i18n="watchTimePerDay">Wiedergabezeit pro Tag</span></div>
-          <div id="ActivityChart" class="eiChart"></div>
-        </section>
-        <div class="eiContentGrid">
-          <section class="eiPanel"><h2 data-i18n="devicesClients">Geräte &amp; Clients</h2><div id="DevicesList"></div></section>
-          <section class="eiPanel"><h2 data-i18n="playbackMethods">Wiedergabemethoden</h2><div id="PlaybackMethodsList"></div></section>
+        <div class="eiFactsBento">
+          <section class="eiPanel eiKingCard eiDirectKing"><span class="eiCrown">👑</span><span class="eiKingAvatar" id="DirectPlayLeaderAvatar">–</span><div class="eiKingCopy"><small data-i18n="directPlayKing">Direct Play King</small><h2 id="DirectPlayLeaderName">–</h2></div><div class="eiKingCount"><strong id="DirectPlayLeaderCount">–</strong><span data-i18n="directPlays">Direct Plays</span></div></section>
+          <section class="eiPanel eiKingCard eiTranscodeKing"><span class="eiCrown">👑</span><span class="eiKingAvatar" id="TranscodeLeaderAvatar">–</span><div class="eiKingCopy"><small data-i18n="transcodeKing">Transcode King</small><h2 id="TranscodeLeaderName">–</h2></div><div class="eiKingCount"><strong id="TranscodeLeaderCount">–</strong><span data-i18n="transcodes">Transcodierungen</span></div></section>
+          <section class="eiPanel eiRankingPanel"><div class="eiPanelTitle"><h2 data-i18n="userRanking">Top Nutzer</h2></div><div id="UserRankingList" class="eiUserTiles"></div></section>
+          <section class="eiPanel eiActivityPanel"><div class="eiPanelTitle"><h2 data-i18n="topClientsWatch">Top Clients</h2></div><div id="TopClientsWatchList" class="eiWatchClientList"></div></section>
+          <section class="eiPanel eiTranscodeClientsPanel"><div class="eiPanelTitle"><h2 data-i18n="topClientsTranscoding">Top Clients Transcoding</h2></div><div id="TopClientsTranscodeList" class="eiWatchClientList eiTranscodeClientList"></div></section>
         </div>
       </main>
     </div>

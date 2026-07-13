@@ -81,21 +81,50 @@ public sealed class PlaybackReportingStatisticsApi(
         var items = Reader().TopItemsAsync(from, to, request.Limit).GetAwaiter().GetResult();
         foreach (var item in items.Where(x => x.MediaKind.Equals("Episode", StringComparison.OrdinalIgnoreCase)))
         {
-            if (!Guid.TryParse(item.ItemId, out var episodeId)) continue;
-            var episode = library.GetItemById(episodeId);
+            var episode = ResolveLibraryItem(item.ItemId);
             if (episode is null || episode.SeriesId <= 0) continue;
             var series = library.GetItemById(episode.SeriesId);
             if (series is null) continue;
             item.SeriesItemId = series.IdString;
             item.SeriesName = series.Name;
         }
-        return items;
+        var nonEpisodes = items.Where(x => !x.MediaKind.Equals("Episode", StringComparison.OrdinalIgnoreCase));
+        var seriesItems = items
+            .Where(x => x.MediaKind.Equals("Episode", StringComparison.OrdinalIgnoreCase)
+                && !string.IsNullOrWhiteSpace(x.SeriesItemId)
+                && !string.IsNullOrWhiteSpace(x.SeriesName))
+            .GroupBy(x => new { x.SeriesItemId, x.SeriesName })
+            .Select(group => new InsightsTopItemDto
+            {
+                ItemId = group.Key.SeriesItemId!,
+                Name = group.Key.SeriesName!,
+                MediaKind = "Episode",
+                SeriesItemId = group.Key.SeriesItemId,
+                SeriesName = group.Key.SeriesName,
+                WatchSeconds = group.Sum(x => x.WatchSeconds),
+                PlayCount = group.Sum(x => x.PlayCount)
+            });
+        return nonEpisodes.Concat(seriesItems)
+            .OrderByDescending(x => x.WatchSeconds)
+            .ThenBy(x => x.Name)
+            .ToArray();
+    }
+
+    private MediaBrowser.Controller.Entities.BaseItem? ResolveLibraryItem(string itemId)
+    {
+        if (long.TryParse(itemId, out var internalId)) return library.GetItemById(internalId);
+        return Guid.TryParse(itemId, out var guid) ? library.GetItemById(guid) : null;
     }
 
     public object Get(GetInsightsUsers request)
     {
         var (from, to) = DateRange(request.Range);
-        var names = users.GetUserList(new UserQuery()).ToDictionary(x => x.Id.ToString("N"), x => x.Name);
+        var names = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var user in users.GetUserList(new UserQuery()))
+        {
+            names[user.Id.ToString("N")] = user.Name;
+            names[user.Id.ToString("D")] = user.Name;
+        }
         return Reader().UsersAsync(from, to, id => names.TryGetValue(id, out var name) ? name : id).GetAwaiter().GetResult();
     }
 
@@ -111,12 +140,47 @@ public sealed class PlaybackReportingStatisticsApi(
         return Reader().PlaybackMethodsAsync(from, to).GetAwaiter().GetResult();
     }
 
-    public object Get(GetInsightsServerOverview request) => new ServerLibraryStatisticsService(library).GetOverview();
+    public object Get(GetInsightsServerOverview request)
+    {
+        var pluginConfiguration = EmbyInsights.Plugin.Plugin.Instance?.Configuration;
+        return new ServerLibraryStatisticsService(
+            library,
+            pluginConfiguration?.LibraryFilterEnabled == true,
+            pluginConfiguration?.IncludedLibraryPaths).GetOverview();
+    }
 
     private PlaybackReportingStatisticsReader Reader()
     {
         var database = Path.Combine(configuration.ApplicationPaths.DataPath, "playback_reporting.db");
-        return new PlaybackReportingStatisticsReader(new PlaybackReportingDataSource(database));
+        var source = new PlaybackReportingDataSource(database);
+        var pluginConfiguration = EmbyInsights.Plugin.Plugin.Instance?.Configuration;
+        if (pluginConfiguration?.PlaybackReportingEnabled == false)
+            return new PlaybackReportingStatisticsReader(source, _ => false);
+        if (pluginConfiguration?.LibraryFilterEnabled != true)
+            return new PlaybackReportingStatisticsReader(source);
+
+        var paths = pluginConfiguration.IncludedLibraryPaths
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Select(x => x.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+        var inclusionCache = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+        return new PlaybackReportingStatisticsReader(source, record =>
+        {
+            if (inclusionCache.TryGetValue(record.ItemId, out var included)) return included;
+            var itemPath = ResolveLibraryItem(record.ItemId)?.Path;
+            included = itemPath is not null && paths.Any(path => IsWithinLibrary(itemPath, path));
+            inclusionCache[record.ItemId] = included;
+            return included;
+        });
+    }
+
+    private static bool IsWithinLibrary(string itemPath, string libraryPath)
+    {
+        if (libraryPath.Length == 0) return false;
+        if (itemPath.Equals(libraryPath, StringComparison.OrdinalIgnoreCase)) return true;
+        return itemPath.StartsWith(libraryPath + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
+            || itemPath.StartsWith(libraryPath + Path.AltDirectorySeparatorChar, StringComparison.OrdinalIgnoreCase);
     }
 
     private static (DateTimeOffset From, DateTimeOffset To) DateRange(string? range)

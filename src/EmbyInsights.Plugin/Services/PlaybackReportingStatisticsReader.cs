@@ -3,7 +3,9 @@ using EmbyInsights.Models;
 
 namespace EmbyInsights.Services;
 
-public sealed class PlaybackReportingStatisticsReader(IPlaybackDataSource source)
+public sealed class PlaybackReportingStatisticsReader(
+    IPlaybackDataSource source,
+    Func<SourcePlaybackRecord, bool>? includeRecord = null)
 {
     public async Task<InsightsOverviewDto> OverviewAsync(DateTimeOffset from, DateTimeOffset to, CancellationToken token = default)
     {
@@ -41,7 +43,7 @@ public sealed class PlaybackReportingStatisticsReader(IPlaybackDataSource source
         DateTimeOffset from, DateTimeOffset to, int limit, CancellationToken token = default)
     {
         var rows = await ReadAsync(from, to, token).ConfigureAwait(false);
-        return rows.GroupBy(x => new { x.ItemId, x.ItemName, x.MediaKind })
+        var grouped = rows.GroupBy(x => new { x.ItemId, x.ItemName, x.MediaKind })
             .Select(x => new InsightsTopItemDto
             {
                 ItemId = x.Key.ItemId,
@@ -50,8 +52,18 @@ public sealed class PlaybackReportingStatisticsReader(IPlaybackDataSource source
                 WatchSeconds = x.Sum(r => r.WatchedTicks) / TimeSpan.TicksPerSecond,
                 PlayCount = x.Count()
             })
-            .OrderByDescending(x => x.WatchSeconds).ThenBy(x => x.Name)
-            .Take(Math.Clamp(limit, 1, 100)).ToArray();
+            .ToArray();
+
+        // The dashboard renders separate movie and series highlights. Applying one
+        // global limit can otherwise let (for example) ten movies hide every episode.
+        var perKindLimit = Math.Clamp(limit, 1, 100);
+        return grouped.GroupBy(x => x.MediaKind, StringComparer.OrdinalIgnoreCase)
+            .SelectMany(kind => kind.OrderByDescending(x => x.WatchSeconds)
+                .ThenBy(x => x.Name)
+                .Take(perKindLimit))
+            .OrderByDescending(x => x.WatchSeconds)
+            .ThenBy(x => x.Name)
+            .ToArray();
     }
 
     public async Task<IReadOnlyList<InsightsUserDto>> UsersAsync(
@@ -65,6 +77,8 @@ public sealed class PlaybackReportingStatisticsReader(IPlaybackDataSource source
                 Name = resolveName(x.Key),
                 WatchSeconds = x.Sum(r => r.WatchedTicks) / TimeSpan.TicksPerSecond,
                 PlayCount = x.Count(),
+                DirectPlayCount = x.Count(r => r.PlaybackMethod == PlaybackMethod.DirectPlay),
+                TranscodeCount = x.Count(r => r.PlaybackMethod == PlaybackMethod.Transcode),
                 Movies = x.Count(r => r.MediaKind == MediaKind.Movie),
                 Episodes = x.Count(r => r.MediaKind == MediaKind.Episode),
                 LastActivity = x.Max(r => r.EndedAt)
@@ -81,7 +95,8 @@ public sealed class PlaybackReportingStatisticsReader(IPlaybackDataSource source
                 ClientName = x.Key.Client,
                 DeviceName = x.Key.Device,
                 WatchSeconds = x.Sum(r => r.WatchedTicks) / TimeSpan.TicksPerSecond,
-                PlayCount = x.Count()
+                PlayCount = x.Count(),
+                TranscodeCount = x.Count(r => r.PlaybackMethod == PlaybackMethod.Transcode)
             }).OrderByDescending(x => x.WatchSeconds).ToArray();
     }
 
@@ -102,7 +117,8 @@ public sealed class PlaybackReportingStatisticsReader(IPlaybackDataSource source
     private async Task<List<SourcePlaybackRecord>> ReadAsync(DateTimeOffset from, DateTimeOffset to, CancellationToken token)
     {
         var rows = new List<SourcePlaybackRecord>();
-        await foreach (var row in source.ReadAsync(from, to, token).ConfigureAwait(false)) rows.Add(row);
+        await foreach (var row in source.ReadAsync(from, to, token).ConfigureAwait(false))
+            if (includeRecord is null || includeRecord(row)) rows.Add(row);
         return rows;
     }
 
@@ -151,6 +167,8 @@ public sealed class InsightsUserDto
     public string Name { get; set; } = string.Empty;
     public long WatchSeconds { get; set; }
     public int PlayCount { get; set; }
+    public int DirectPlayCount { get; set; }
+    public int TranscodeCount { get; set; }
     public int Movies { get; set; }
     public int Episodes { get; set; }
     public DateTimeOffset LastActivity { get; set; }
@@ -162,6 +180,7 @@ public sealed class InsightsDeviceDto
     public string DeviceName { get; set; } = string.Empty;
     public long WatchSeconds { get; set; }
     public int PlayCount { get; set; }
+    public int TranscodeCount { get; set; }
 }
 
 public sealed class InsightsPlaybackMethodDto

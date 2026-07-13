@@ -3,8 +3,9 @@
 
     var buttonId = "emby-insights-home-tab";
     var overlayId = "emby-insights-overlay";
+    var openStateKey = "emby-insights-open";
     var pluginId = "be7dcc0f-d8d7-498f-9d65-77db72239cee";
-    var assetVersion = "0.13.0";
+    var assetVersion = "0.13.17";
     var checking = false;
     var retryTimer = null;
 
@@ -14,7 +15,8 @@
 
     function isInsightsRoute() {
         var hash = window.location.hash || "";
-        return /#!\/embyinsights(?:$|[?&])/.test(hash) || hash.indexOf("#!/home?embyinsights=1") === 0;
+        return /#!\/embyinsights(?:$|[?&])/.test(hash) ||
+            (isHomeRoute() && window.sessionStorage.getItem(openStateKey) === "1");
     }
 
     function removeOverlay() {
@@ -22,6 +24,13 @@
         if (overlay) overlay.remove();
         var button = document.getElementById(buttonId);
         if (button) button.classList.remove("active");
+    }
+
+    function updateOverlayTop() {
+        var overlay = document.getElementById(overlayId);
+        if (!overlay) return;
+        var header = document.querySelector(".skinHeader");
+        overlay.style.top = Math.max(0, header ? header.getBoundingClientRect().bottom : 0) + "px";
     }
 
     function showOverlay() {
@@ -36,12 +45,11 @@
         var button = document.getElementById(buttonId);
         if (button) button.classList.add("active");
         if (document.getElementById(overlayId)) return;
-        var header = document.querySelector(".skinHeader");
         var overlay = document.createElement("div");
         overlay.id = overlayId;
-        overlay.style.top = Math.max(0, header ? header.getBoundingClientRect().bottom : 0) + "px";
-        overlay.innerHTML = '<div class="emby-insights-loading">Statistiken werden geladen…</div>';
+        overlay.innerHTML = '<div class="emby-insights-loading">Insights werden geladen…</div>';
         document.body.appendChild(overlay);
+        updateOverlayTop();
         fetch("emby-insights/dashboard.html?v=" + assetVersion, { cache: "no-store" }).then(function (response) {
             if (!response.ok) throw new Error("Dashboard resource returned " + response.status);
             return response.text();
@@ -72,7 +80,7 @@
             var slider = sliders[index];
             var start = slider.querySelector('.main-tab-button[data-index="0"]');
             var favorites = slider.querySelector('.main-tab-button[data-index="1"]');
-            if (start && favorites && start.textContent.trim() === "Start" && favorites.textContent.trim() === "Favoriten")
+            if (start && favorites && slider.closest(".skinHeader"))
                 return { slider: slider, favorites: favorites };
         }
         return null;
@@ -82,12 +90,17 @@
         event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
-        window.location.hash = "#!/home?embyinsights=1";
+        window.sessionStorage.setItem(openStateKey, "1");
+        // Keep Emby's router on its real home route. Custom query parameters can
+        // leave some Web Client builds on the loading screen after a hard refresh.
+        if (window.location.hash !== "#!/home") window.location.hash = "#!/home";
         showOverlay();
     }
 
     function inject() {
+        updateOverlayTop();
         if (!isHomeRoute()) {
+            window.sessionStorage.removeItem(openStateKey);
             removeOverlay();
             var oldButton = document.getElementById(buttonId);
             if (oldButton) oldButton.remove();
@@ -110,8 +123,8 @@
                 button.type = "button";
                 button.id = buttonId;
                 button.className = "emby-insights-tab-button";
-                button.textContent = "Statistiken";
-                button.setAttribute("aria-label", "Statistiken");
+                button.textContent = "Insights";
+                button.setAttribute("aria-label", button.textContent);
                 button.addEventListener("click", openStatistics);
                 homeTabs.favorites.insertAdjacentElement("afterend", button);
                 if (isInsightsRoute()) showOverlay();
@@ -129,6 +142,7 @@
         if (target) return openStatistics(event);
         var normalTab = event.target && event.target.closest ? event.target.closest(".main-tab-button") : null;
         if (normalTab && isInsightsRoute()) {
+            window.sessionStorage.removeItem(openStateKey);
             removeOverlay();
             window.location.hash = "#!/home";
         }
@@ -138,9 +152,7 @@
     window.addEventListener("hashchange", syncRoute);
     window.addEventListener("load", syncRoute);
     window.addEventListener("resize", function () {
-        var overlay = document.getElementById(overlayId);
-        var header = document.querySelector(".skinHeader");
-        if (overlay) overlay.style.top = Math.max(0, header ? header.getBoundingClientRect().bottom : 0) + "px";
+        updateOverlayTop();
     });
     document.addEventListener("viewshow", syncRoute);
     syncRoute();

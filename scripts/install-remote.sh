@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-VERSION="0.13.0"
+VERSION="0.13.17"
 HOST=""
 PLUGIN_DIR=""
 CONTAINER="emby"

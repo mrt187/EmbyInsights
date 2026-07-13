@@ -91,17 +91,23 @@ public sealed class PlaybackReportingDataSource(string databasePath) : IPlayback
     private static long ParseLong(string value) =>
         long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed) ? parsed : 0;
 
-    private static MediaKind ParseMediaKind(string value) => value.ToLowerInvariant() switch
+    internal static MediaKind ParseMediaKind(string? value) => (value ?? string.Empty).Trim().ToLowerInvariant() switch
     {
         "movie" => MediaKind.Movie, "episode" => MediaKind.Episode, "audio" => MediaKind.Audio,
         "unknown" or "" => MediaKind.Unknown, _ => MediaKind.Other
     };
 
-    private static PlaybackMethod ParsePlaybackMethod(string value) => value.ToLowerInvariant() switch
+    internal static PlaybackMethod ParsePlaybackMethod(string? value)
     {
-        "directplay" => PlaybackMethod.DirectPlay, "directstream" => PlaybackMethod.DirectStream,
-        "transcode" or "transcoding" => PlaybackMethod.Transcode, _ => PlaybackMethod.Unknown
-    };
+        var normalized = (value ?? string.Empty).Trim().ToLowerInvariant();
+        if (normalized.StartsWith("transcode", StringComparison.Ordinal)) return PlaybackMethod.Transcode;
+        return normalized switch
+        {
+            "directplay" => PlaybackMethod.DirectPlay,
+            "directstream" => PlaybackMethod.DirectStream,
+            _ => PlaybackMethod.Unknown
+        };
+    }
 
     private static string Nullable(string? value) => value ?? string.Empty;
     private static string? NullIfEmpty(string? value) => string.IsNullOrWhiteSpace(value) ? null : value;

@@ -9,7 +9,7 @@ DLL="src/EmbyInsights.Plugin/bin/Release/net8.0/$DLL_NAME"
 TAB_SCRIPT="src/EmbyInsights.Plugin/WebClientExtension/statistics-tab.global.js"
 DASHBOARD_HTML="src/EmbyInsights.Plugin/WebClientExtension/statistics.html"
 DASHBOARD_SCRIPT="src/EmbyInsights.Plugin/WebClientExtension/statistics.js"
-TAB_VERSION="0.13.0"
+TAB_VERSION="0.13.17"
 
 cd "$(dirname "$0")"
 

@@ -13,7 +13,7 @@
     const favorites = document.querySelector('[data-index="1"], a[href*="favorites"]');
     if (!favorites?.parentNode) return;
     const tab = favorites.cloneNode(true);
-    tab.id = tabId; tab.textContent = "Statistiken"; tab.setAttribute("href", "#!/statistics");
+    tab.id = tabId; tab.textContent = "Insights"; tab.setAttribute("href", "#!/statistics");
     favorites.parentNode.insertBefore(tab, favorites.nextSibling);
   }
 
