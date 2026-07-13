@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbyInsights.Plugin", "src/EmbyInsights.Plugin/EmbyInsights.Plugin.csproj", "{29F62795-0A36-43CF-A0BC-98247C3AD664}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbyInsights.Tests", "tests/EmbyInsights.Tests/EmbyInsights.Tests.csproj", "{9BBA2B24-4157-44D4-9411-5B86B70C783D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{29F62795-0A36-43CF-A0BC-98247C3AD664}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29F62795-0A36-43CF-A0BC-98247C3AD664}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29F62795-0A36-43CF-A0BC-98247C3AD664}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29F62795-0A36-43CF-A0BC-98247C3AD664}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BBA2B24-4157-44D4-9411-5B86B70C783D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BBA2B24-4157-44D4-9411-5B86B70C783D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BBA2B24-4157-44D4-9411-5B86B70C783D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BBA2B24-4157-44D4-9411-5B86B70C783D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

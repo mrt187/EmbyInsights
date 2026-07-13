@@ -1,0 +1,143 @@
+<div is="emby-scroller"
+     class="view flex flex-direction-column scrollFrameY flex-grow"
+     data-horizontal="false"
+     data-forcescrollbar="true"
+     data-centerfocus="true"
+     data-bindheader="true"
+     data-controller="__plugin/EmbyInsightsConfigJs"
+     data-title="Emby Insights">
+
+    <div class="scrollSlider flex-grow flex-direction-column padded-left padded-left-page padded-right padded-top-page padded-bottom-page">
+        <style>
+            .eiIntro { margin-bottom: 1.2em; }
+            .eiHeader { align-items: center; display: flex; gap: 1em; justify-content: space-between; margin-bottom: 1.2em; }
+            .eiHeaderButtons { display: flex; flex: 0 0 auto; gap: .5em; }
+            .eiSection { margin-bottom: .65em; }
+            .eiSection > summary {
+                align-items: center; background: #3a3a3c; border-radius: 6px; color: #eee;
+                cursor: pointer; display: flex; font-size: 1em; font-weight: 600;
+                justify-content: space-between; list-style: none; padding: .75em 1em;
+            }
+            .eiSection > summary:hover { background: #48484a; }
+            .eiSection > summary::-webkit-details-marker { display: none; }
+            .eiSection > summary::after { content: "▸"; transition: transform .15s ease; }
+            .eiSection[open] > summary::after { transform: rotate(90deg); }
+            .eiSection > .verticalSection { padding: .9em .2em .3em; }
+            .eiStatusGrid { display: grid; gap: .7em; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); margin: .8em 0; }
+            .eiStatusCard { background: #2c2c2e; border: 1px solid #3a3a3c; border-radius: 8px; padding: .85em 1em; }
+            .eiStatusCard strong { display: block; margin-bottom: .25em; }
+            .eiMuted { color: #aaa; font-size: .9em; }
+            .eiModalBackdrop { align-items:center; background:rgba(0,0,0,.65); display:none; inset:0; justify-content:center; position:fixed; z-index:10000; }
+            .eiModalBackdrop.open { display:flex; }
+            .eiModal { background:#1c1c1e; border-radius:12px; box-shadow:0 20px 60px rgba(0,0,0,.5); color:#eee; max-height:80vh; max-width:720px; overflow:auto; padding:1.5em; width:90%; }
+            .eiModal h2 { margin-top:0; }
+            .eiModalActions { display:flex; flex-wrap:wrap; gap:.5em; justify-content:flex-end; margin-top:1em; }
+            .eiLog { background:#000; border-radius:6px; color:#ddd; font-family:monospace; line-height:1.4; max-height:52vh; overflow:auto; padding:1em; white-space:pre-wrap; word-break:break-word; }
+            .eiReadme { line-height:1.5; white-space:pre-wrap; }
+        </style>
+
+        <div class="eiHeader">
+            <div class="eiIntro" style="margin:0;">
+                <h1 style="margin-bottom:.25em;">Emby Insights</h1>
+                <div class="fieldDescription">Moderne, nur für Administratoren sichtbare Wiedergabestatistiken.</div>
+            </div>
+            <div class="eiHeaderButtons">
+                <button is="emby-button" type="button" id="BtnReadme" class="raised">📖 Readme</button>
+                <button is="emby-button" type="button" id="BtnLogs" class="raised">📋 Logs</button>
+                <button is="emby-button" type="button" id="BtnInfo" class="raised">ℹ️ Info</button>
+            </div>
+        </div>
+
+        <form id="EmbyInsightsConfigForm">
+            <details class="eiSection">
+                <summary>Datenerfassung</summary>
+                <div class="verticalSection">
+                    <label class="emby-checkbox-label">
+                        <input is="emby-checkbox" type="checkbox" id="TrackingEnabled" />
+                        <span>Native Wiedergabeerfassung aktivieren</span>
+                    </label>
+                    <div class="fieldDescription">Erfasst neue Wiedergaben direkt über Emby Insights.</div>
+
+                    <div class="inputContainer" style="margin-top:1em;">
+                        <input is="emby-input" type="number" id="MinimumPlaybackSeconds" min="0" max="3600" label="Mindestwiedergabedauer (Sekunden)" />
+                        <div class="fieldDescription">Kürzere Sitzungen werden nicht als Wiedergabe gespeichert.</div>
+                    </div>
+
+                    <div class="inputContainer">
+                        <input is="emby-input" type="number" id="RetentionDays" min="0" max="36500" label="Aufbewahrung (Tage)" />
+                        <div class="fieldDescription">0 bewahrt Statistiken unbegrenzt auf.</div>
+                    </div>
+                </div>
+            </details>
+
+            <details class="eiSection">
+                <summary>Datenquellen</summary>
+                <div class="verticalSection">
+                    <label class="emby-checkbox-label">
+                        <input is="emby-checkbox" type="checkbox" id="PlaybackReportingEnabled" />
+                        <span>Playback Reporting verwenden</span>
+                    </label>
+                    <div class="fieldDescription">Importiert vorhandene Wiedergaben ausschließlich lesend und speichert sie normalisiert in Emby Insights.</div>
+
+                    <label class="emby-checkbox-label" style="margin-top:1em;">
+                        <input is="emby-checkbox" type="checkbox" id="StatisticsSourceEnabled" />
+                        <span>Statistics als ergänzende Quelle verwenden</span>
+                    </label>
+                    <div class="fieldDescription">Standardmäßig deaktiviert, bis die verfügbaren Felder der installierten Version geprüft wurden.</div>
+
+                    <div class="eiStatusGrid">
+                        <div class="eiStatusCard"><strong>Playback Reporting</strong><span class="eiMuted">Status wird mit dem Provider-Endpunkt verbunden.</span></div>
+                        <div class="eiStatusCard"><strong>Statistics</strong><span class="eiMuted">Optionale ergänzende Datenquelle.</span></div>
+                    </div>
+                </div>
+            </details>
+
+            <details class="eiSection">
+                <summary>Darstellung</summary>
+                <div class="verticalSection">
+                    <div class="selectContainer">
+                        <select is="emby-select" id="Language" label="Sprache / Language">
+                            <option value="de">Deutsch</option>
+                            <option value="en">English</option>
+                        </select>
+                        <div class="fieldDescription">Sprache der Seiten „Server Facts“ und „User Facts“.</div>
+                    </div>
+                </div>
+            </details>
+
+            <details class="eiSection">
+                <summary>Browser-Erweiterung</summary>
+                <div class="verticalSection">
+                    <label class="emby-checkbox-label">
+                        <input is="emby-checkbox" type="checkbox" id="EnableWebClientExtension" />
+                        <span>Admin-Tab „Statistiken“ aktivieren</span>
+                    </label>
+                    <div class="fieldDescription">Der Tab wird später ausschließlich für Administratoren im Browser eingeblendet.</div>
+                    <button is="emby-button" type="button" id="BtnOpenStatistics" class="raised" style="margin-top:1em;">Statistiken öffnen</button>
+                </div>
+            </details>
+
+            <div class="verticalSection" style="margin-top:1em;">
+                <button is="emby-button" type="submit" class="raised button-submit block">
+                    <span>Speichern</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div id="ReadmeModal" class="eiModalBackdrop"><div class="eiModal">
+        <h2>📖 Emby Insights – Readme</h2><div id="ReadmeBody" class="eiReadme">Lädt…</div>
+        <div class="eiModalActions"><button is="emby-button" type="button" data-close="ReadmeModal" class="raised">Schließen</button></div>
+    </div></div>
+    <div id="LogsModal" class="eiModalBackdrop"><div class="eiModal">
+        <h2>📋 Emby Insights Logs</h2><pre id="LogsBody" class="eiLog">Lädt…</pre>
+        <div class="eiModalActions"><button is="emby-button" type="button" id="BtnRefreshLogs" class="raised">Aktualisieren</button><button is="emby-button" type="button" data-close="LogsModal" class="raised">Schließen</button></div>
+    </div></div>
+    <div id="InfoModal" class="eiModalBackdrop"><div class="eiModal">
+        <h2>ℹ️ Emby Insights</h2>
+        <p><strong>Version 0.13.0.0</strong></p>
+        <p>Admin-Dashboard für Wiedergabeaktivität. Emby Insights führt native Sitzungen und optionale, ausschließlich lesend verwendete Datenquellen in einer eigenen Datenbasis zusammen.</p>
+        <p>Playback Reporting wird niemals von Emby Insights verändert.</p>
+        <div class="eiModalActions"><button is="emby-button" type="button" data-close="InfoModal" class="raised">Schließen</button></div>
+    </div></div>
+</div>

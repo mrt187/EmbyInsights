@@ -1,0 +1,105 @@
+<div is="emby-scroller"
+     class="view flex flex-direction-column scrollFrameY flex-grow"
+     data-horizontal="false"
+     data-forcescrollbar="true"
+     data-controller="__plugin/EmbyInsightsStatisticsJs"
+     data-title="Statistiken">
+  <div class="scrollSlider flex-grow flex-direction-column">
+    <style>
+      .eiDashboard { --accent:#52b788; --card:#192024; --muted:#9aa7ad; min-height:100%; padding:clamp(1.2rem,4vw,3rem); color:#f7faf9; background:radial-gradient(circle at 82% 0,#18392f 0,transparent 34%),#101416; box-sizing:border-box; }
+      .eiDashHeader,.eiPanelTitle { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+      .eiEyebrow { color:var(--accent); letter-spacing:.12em; text-transform:uppercase; font-size:.72rem; margin:0; }
+      .eiDashHeader .eiEyebrow { font-size:1rem; font-weight:700; letter-spacing:.16em; }
+      .eiDashHeader h1 { font-size:clamp(2rem,5vw,3.4rem); margin:.2rem 0 0; }
+      .eiRange { display:flex; padding:.3rem; border-radius:999px; background:#20282c; }
+      .eiRange button { border:0; border-radius:999px; padding:.65rem 1rem; color:var(--muted); background:transparent; cursor:pointer; }
+      .eiRange button.active { color:#07110d; background:var(--accent); }
+      .eiServerBadge { display:none; padding:.65rem 1.1rem; border-radius:999px; color:#d7eee3; background:linear-gradient(135deg,#245b49,#1a3b32); border:1px solid #74c69d44; font-weight:600; }
+      .eiDashboard.eiHighlightsMode .eiRange { display:none; }.eiDashboard.eiHighlightsMode .eiServerBadge { display:block; }
+      .eiMetrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1rem; margin:2rem 0 1rem; }
+      .eiMetric,.eiPanel { border:1px solid #ffffff0d; border-radius:1rem; background:linear-gradient(145deg,#1d262a,#161c1f); box-shadow:0 1rem 3rem #0003; }
+      .eiMetric { padding:1.25rem; }.eiMetric strong { display:block; font-size:clamp(1.45rem,3vw,2rem); }.eiMetric span,.eiPanelTitle span,.eiEmpty { color:var(--muted); }
+      .eiPanel { padding:1.25rem; margin-top:1rem; }.eiPanel h2 { margin:0 0 1rem; }
+      .eiContentGrid { display:grid; grid-template-columns:2fr 1fr; gap:1rem; }
+      .eiChart { height:15rem; display:flex; align-items:flex-end; gap:max(.25rem,1vw); padding:1rem .25rem 0; overflow:hidden; }
+      .eiBarColumn { flex:1; min-width:8px; height:100%; display:flex; align-items:center; justify-content:flex-end; flex-direction:column; gap:.45rem; }
+      .eiBar { width:100%; max-width:34px; min-height:2px; border-radius:6px 6px 2px 2px; background:linear-gradient(180deg,#74c69d,var(--accent)); transition:height .25s ease; }
+      .eiBarLabel { color:var(--muted); font-size:.68rem; white-space:nowrap; }
+      .eiTopMeta { color:var(--muted); font-size:.82rem; }
+      .eiError { color:#ff8a80; padding:1rem; }
+      .eiDataRow { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:.8rem; padding:.75rem 0; border-bottom:1px solid #ffffff0d; align-items:center; }
+      .eiDataRow:last-child { border:0; }.eiDataRow strong { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }.eiDataValue { color:var(--accent); font-weight:700; white-space:nowrap; }
+      .eiMethodBar { background:#293236; border-radius:999px; height:.38rem; margin-top:.45rem; overflow:hidden; }.eiMethodBar span { background:var(--accent); display:block; height:100%; border-radius:inherit; }
+      .eiSubnav { display:flex; gap:.35rem; margin-top:1.4rem; padding:.3rem; width:max-content; border-radius:999px; background:#20282c; }
+      .eiSubnav button { border:0; border-radius:999px; padding:.7rem 1.25rem; color:var(--muted); background:transparent; cursor:pointer; }.eiSubnav button.active { background:#f4f7f6; color:#111; }
+      .eiToolbar { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-top:1.4rem; }.eiToolbar .eiSubnav { margin-top:0; }
+      .eiPage[hidden] { display:none !important; }
+      .eiHighlightSummary { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:1px; margin-top:1.4rem; border:1px solid #ffffff14; border-radius:1.1rem; overflow:hidden; background:linear-gradient(110deg,#153c31 0%,#192c29 25%,#192427 58%,#171e22 100%); box-shadow:0 1rem 3rem #0003,0 0 4rem #2d8d6812; }
+      .eiSummaryLead,.eiSummaryStat { min-height:7.5rem; padding:1.2rem 2rem; background:linear-gradient(145deg,#ffffff08,#00000012); display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; position:relative; }
+      .eiSummaryStat::before { content:""; position:absolute; left:0; top:1.1rem; bottom:1.1rem; width:3px; border-radius:999px; background:var(--accent); box-shadow:0 0 1rem #52b788aa; }
+      .eiSummaryLead strong,.eiSummaryStat strong { font-size:clamp(1.8rem,4vw,3rem); line-height:1; }.eiSummaryLead span,.eiSummaryStat span { color:#b4c4bd; font-size:.85rem; margin-top:.45rem; }.eiSummaryStat .eiEyebrow { margin-bottom:.45rem; }.eiSummaryStat strong .eiPrimaryValue { color:#fff; font-size:inherit; margin:0; }.eiSummaryStat strong .eiSubValue { color:#81928b; font-size:.82em; margin:0; }.eiSummaryStat strong .eiValueDivider { color:#64736d; font-size:.7em; margin:0 .08em; }
+      .eiSecondaryFacts { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; margin-top:1rem; }.eiSecondaryFact { position:relative; padding:1.2rem 2rem; border:1px solid #ffffff12; border-radius:1rem; background:linear-gradient(135deg,#1b2828,#171e21); box-shadow:0 .8rem 2rem #0002; text-align:center; }.eiSecondaryFact strong { display:block; font-size:1.8rem; margin:.4rem 0 .2rem; }.eiSecondaryFact span { color:var(--muted); }
+      .eiHighlightGrid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; margin-top:1rem; }
+      .eiFeatureCard { position:relative; min-height:19rem; border-radius:1rem; overflow:hidden; background:#1a2226; border:1px solid #ffffff0d; }
+      .eiFeatureImage { width:100%; height:100%; position:absolute; inset:0; object-fit:cover; }.eiFeatureShade { position:absolute; inset:0; background:linear-gradient(180deg,transparent 30%,rgba(4,9,7,.96)); }
+      .eiFeatureContent { position:absolute; left:1.2rem; right:1.2rem; bottom:1.2rem; z-index:1; }.eiFeatureContent small { color:var(--accent); text-transform:uppercase; letter-spacing:.1em; }.eiFeatureContent h2 { margin:.3rem 0; font-size:1.5rem; }.eiFeatureContent p { margin:0; color:#ccd5d1; }
+      .eiUserCard { display:grid; place-items:center; text-align:center; background:radial-gradient(circle at 50% 12%,#284b40 0,transparent 45%),linear-gradient(145deg,#1d262a,#161c1f); }
+      .eiUserContent { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; padding:2rem 1.2rem; }
+      .eiUserAvatar { width:7rem; height:7rem; border-radius:50%; object-fit:cover; background:#31413b; border:4px solid #ffffff24; box-shadow:0 .8rem 2rem #0006; margin-bottom:1rem; }
+      .eiUserContent small { color:var(--accent); text-transform:uppercase; letter-spacing:.1em; }.eiUserContent h2 { margin:.35rem 0; font-size:1.8rem; }.eiUserContent p { margin:0; color:#ccd5d1; }
+      @media(max-width:850px){.eiMetrics{grid-template-columns:repeat(2,1fr)}.eiContentGrid,.eiHighlightGrid,.eiSecondaryFacts{grid-template-columns:1fr}.eiHighlightSummary{grid-template-columns:repeat(2,1fr)}.eiDashHeader{align-items:flex-start;flex-direction:column}.eiToolbar{align-items:flex-start;flex-direction:column}.eiRange{max-width:100%;overflow:auto}}
+    </style>
+
+    <div class="eiDashboard eiHighlightsMode">
+      <header class="eiDashHeader">
+        <div><p class="eiEyebrow">Emby Insights</p></div>
+      </header>
+
+      <div class="eiToolbar">
+        <nav class="eiSubnav" aria-label="Statistikbereich">
+          <button type="button" class="active" data-page="highlights" data-i18n="serverFacts">Server-Fakten</button>
+          <button type="button" data-page="technical" data-i18n="userFacts">Nutzer-Fakten</button>
+        </nav>
+        <div class="eiServerBadge" id="ServerVersionBadge">Emby</div>
+        <div class="eiRange" role="group" aria-label="Zeitraum">
+          <button is="emby-button" data-range="7d" data-i18n="days7">7 Tage</button>
+          <button is="emby-button" data-range="30d" data-i18n="days30">30 Tage</button>
+          <button is="emby-button" data-range="year" data-i18n="year">Jahr</button>
+          <button is="emby-button" class="active" data-range="all" data-i18n="all">Gesamt</button>
+        </div>
+      </div>
+
+      <main id="HighlightsPage" class="eiPage">
+        <section class="eiHighlightSummary" aria-label="Highlights im Überblick">
+          <article class="eiSummaryLead"><p class="eiEyebrow" data-i18n="extensions">Plugins</p><strong id="HighlightPlugins">–</strong><span data-i18n="installedPlugins">installierte Plugins</span></article>
+          <article class="eiSummaryStat"><p class="eiEyebrow" data-i18n="movieArchive">Filme</p><strong id="HighlightMovies">–</strong><span data-i18n="moviesOnServer">Filme auf dem Server</span></article>
+          <article class="eiSummaryStat"><p class="eiEyebrow" data-i18n="seriesWorld">Serien</p><strong><span id="HighlightSeries" class="eiPrimaryValue">–</span><span class="eiValueDivider"> / </span><span id="HighlightEpisodes" class="eiSubValue">–</span></strong><span data-i18n="seriesEpisodes">Serien · Episoden</span></article>
+          <article class="eiSummaryStat"><p class="eiEyebrow" data-i18n="musicCollection">Musiksammlung</p><strong><span id="HighlightAlbums" class="eiPrimaryValue">–</span><span class="eiValueDivider"> / </span><span id="HighlightSongs" class="eiSubValue">–</span></strong><span data-i18n="albumsTracks">Alben · Titel</span></article>
+          <article class="eiSummaryStat"><p class="eiEyebrow" data-i18n="mediaStorage">Speicherplatz</p><strong id="HighlightStorage">–</strong><span data-i18n="librarySize">Bibliotheksgröße</span></article>
+        </section>
+        <section class="eiSecondaryFacts" aria-label="Weitere Server-Fakten">
+          <article class="eiSecondaryFact"><p class="eiEyebrow" data-i18n="apiKeys">API-Schlüssel</p><strong id="HighlightApiKeys">–</strong><span data-i18n="createdApiKeys">erstellte Schlüssel</span></article>
+          <article class="eiSecondaryFact"><p class="eiEyebrow" data-i18n="completedDownloads">Abgeschlossene Downloads</p><strong id="HighlightDownloads">–</strong><span data-i18n="offlineItems">vollständig übertragene Offline-Medien</span></article>
+          <article class="eiSecondaryFact"><p class="eiEyebrow" data-i18n="totalWatchTime">Gesamtwiedergabezeit</p><strong id="HighlightWatchTime">–</strong><span data-i18n="allUsers">alle Nutzer</span></article>
+        </section>
+        <section class="eiHighlightGrid">
+          <article class="eiFeatureCard" id="TopMovieCard"><img class="eiFeatureImage" id="TopMovieImage" alt=""><div class="eiFeatureShade"></div><div class="eiFeatureContent"><small data-i18n="topMovie">Top-Film</small><h2 id="TopMovieName" data-i18n="noData">Noch keine Daten</h2><p id="TopMovieMeta"></p></div></article>
+          <article class="eiFeatureCard" id="TopSeriesCard"><img class="eiFeatureImage" id="TopSeriesImage" alt=""><div class="eiFeatureShade"></div><div class="eiFeatureContent"><small data-i18n="topSeries">Top-Serie</small><h2 id="TopSeriesName" data-i18n="noData">Noch keine Daten</h2><p id="TopSeriesMeta"></p></div></article>
+          <article class="eiFeatureCard eiUserCard"><div class="eiUserContent"><img class="eiUserAvatar" id="TopUserImage" alt=""><small data-i18n="topUser">Top-Benutzer</small><h2 id="TopUserName" data-i18n="noData">Noch keine Daten</h2><p id="TopUserMeta"></p></div></article>
+        </section>
+      </main>
+
+      <main id="TechnicalPage" class="eiPage" hidden>
+        <section class="eiMetrics" id="InsightsMetrics" aria-live="polite"></section>
+        <section class="eiPanel">
+          <div class="eiPanelTitle"><h2 data-i18n="activity">Aktivität</h2><span data-i18n="watchTimePerDay">Wiedergabezeit pro Tag</span></div>
+          <div id="ActivityChart" class="eiChart"></div>
+        </section>
+        <div class="eiContentGrid">
+          <section class="eiPanel"><h2 data-i18n="devicesClients">Geräte &amp; Clients</h2><div id="DevicesList"></div></section>
+          <section class="eiPanel"><h2 data-i18n="playbackMethods">Wiedergabemethoden</h2><div id="PlaybackMethodsList"></div></section>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>

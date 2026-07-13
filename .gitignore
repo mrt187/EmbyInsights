@@ -1,0 +1,15 @@
+.DS_Store
+.claude/
+.codex/
+.agents
+bin/
+obj/
+.vs/
+.idea/
+*.user
+*.db
+*.db-shm
+*.db-wal
+dist/
+# Target-server SDK assemblies are copied locally and must not be published.
+lib/*.dll

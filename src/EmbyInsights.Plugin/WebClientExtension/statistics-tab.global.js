@@ -1,0 +1,147 @@
+(function () {
+    "use strict";
+
+    var buttonId = "emby-insights-home-tab";
+    var overlayId = "emby-insights-overlay";
+    var pluginId = "be7dcc0f-d8d7-498f-9d65-77db72239cee";
+    var assetVersion = "0.13.0";
+    var checking = false;
+    var retryTimer = null;
+
+    function isHomeRoute() {
+        return /#!\/(?:home|embyinsights)(?:$|[?&])/.test(window.location.hash || "");
+    }
+
+    function isInsightsRoute() {
+        var hash = window.location.hash || "";
+        return /#!\/embyinsights(?:$|[?&])/.test(hash) || hash.indexOf("#!/home?embyinsights=1") === 0;
+    }
+
+    function removeOverlay() {
+        var overlay = document.getElementById(overlayId);
+        if (overlay) overlay.remove();
+        var button = document.getElementById(buttonId);
+        if (button) button.classList.remove("active");
+    }
+
+    function showOverlay() {
+        if (!isInsightsRoute()) return;
+        if (!window.ApiClient || typeof window.EmbyInsightsDashboard !== "function") {
+            if (!retryTimer) retryTimer = window.setTimeout(function () {
+                retryTimer = null;
+                showOverlay();
+            }, 100);
+            return;
+        }
+        var button = document.getElementById(buttonId);
+        if (button) button.classList.add("active");
+        if (document.getElementById(overlayId)) return;
+        var header = document.querySelector(".skinHeader");
+        var overlay = document.createElement("div");
+        overlay.id = overlayId;
+        overlay.style.top = Math.max(0, header ? header.getBoundingClientRect().bottom : 0) + "px";
+        overlay.innerHTML = '<div class="emby-insights-loading">Statistiken werden geladen…</div>';
+        document.body.appendChild(overlay);
+        fetch("emby-insights/dashboard.html?v=" + assetVersion, { cache: "no-store" }).then(function (response) {
+            if (!response.ok) throw new Error("Dashboard resource returned " + response.status);
+            return response.text();
+        }).then(function (html) {
+            overlay.innerHTML = html;
+            var factory = window.EmbyInsightsDashboard;
+            var view = overlay.querySelector(".view");
+            if (typeof factory !== "function" || !view) throw new Error("Statistics controller not found.");
+            factory(view, window.ApiClient);
+        }).catch(function (error) {
+            console.error("Emby Insights overlay load failed", error);
+            overlay.innerHTML = "";
+            var message = document.createElement("div");
+            message.className = "emby-insights-loading error";
+            message.textContent = "Statistiken konnten nicht geladen werden: " + String(error && error.message ? error.message : error);
+            overlay.appendChild(message);
+        });
+    }
+
+    function syncRoute() {
+        if (isInsightsRoute()) showOverlay(); else removeOverlay();
+        inject();
+    }
+
+    function findHomeTabs() {
+        var sliders = document.querySelectorAll(".tabs-viewmenubar-slider.emby-tabs-slider");
+        for (var index = 0; index < sliders.length; index++) {
+            var slider = sliders[index];
+            var start = slider.querySelector('.main-tab-button[data-index="0"]');
+            var favorites = slider.querySelector('.main-tab-button[data-index="1"]');
+            if (start && favorites && start.textContent.trim() === "Start" && favorites.textContent.trim() === "Favoriten")
+                return { slider: slider, favorites: favorites };
+        }
+        return null;
+    }
+
+    function openStatistics(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        window.location.hash = "#!/home?embyinsights=1";
+        showOverlay();
+    }
+
+    function inject() {
+        if (!isHomeRoute()) {
+            removeOverlay();
+            var oldButton = document.getElementById(buttonId);
+            if (oldButton) oldButton.remove();
+            return;
+        }
+        if (document.getElementById(buttonId) || checking || !window.ApiClient) {
+            if (isInsightsRoute()) showOverlay();
+            return;
+        }
+        var homeTabs = findHomeTabs();
+        if (!homeTabs) return;
+        checking = true;
+        Promise.all([window.ApiClient.getCurrentUser(), window.ApiClient.getPluginConfiguration(pluginId)])
+            .then(function (results) {
+                var user = results[0];
+                var configuration = results[1];
+                if (!user || !user.Policy || !user.Policy.IsAdministrator || configuration.EnableWebClientExtension === false) return;
+                if (document.getElementById(buttonId) || !document.body.contains(homeTabs.slider)) return;
+                var button = document.createElement("button");
+                button.type = "button";
+                button.id = buttonId;
+                button.className = "emby-insights-tab-button";
+                button.textContent = "Statistiken";
+                button.setAttribute("aria-label", "Statistiken");
+                button.addEventListener("click", openStatistics);
+                homeTabs.favorites.insertAdjacentElement("afterend", button);
+                if (isInsightsRoute()) showOverlay();
+            }).catch(function (error) {
+                console.warn("Emby Insights tab injection skipped", error);
+            }).finally(function () { checking = false; });
+    }
+
+    var style = document.createElement("style");
+    style.textContent = ".emby-insights-tab-button{appearance:none;background:transparent;border:0;border-radius:999px;color:rgba(255,255,255,.6);cursor:pointer;display:inline-block;font:inherit;font-weight:600;height:24.7656px;line-height:24.7656px;padding:0 16px}.emby-insights-tab-button:hover,.emby-insights-tab-button:focus{color:#fff;outline:none}.emby-insights-tab-button.active{background:rgba(189,189,189,.5);border-radius:999px;color:#fff}#emby-insights-overlay{background:#101416;bottom:0;left:0;overflow:auto;position:fixed;right:0;z-index:1090}#emby-insights-overlay>.view{height:100%}.emby-insights-loading{color:#aaa;display:grid;height:100%;place-items:center}.emby-insights-loading.error{color:#ff8a80}";
+    document.head.appendChild(style);
+
+    document.addEventListener("click", function (event) {
+        var target = event.target && event.target.closest ? event.target.closest("#" + buttonId) : null;
+        if (target) return openStatistics(event);
+        var normalTab = event.target && event.target.closest ? event.target.closest(".main-tab-button") : null;
+        if (normalTab && isInsightsRoute()) {
+            removeOverlay();
+            window.location.hash = "#!/home";
+        }
+    }, true);
+
+    new MutationObserver(inject).observe(document.documentElement, { childList: true, subtree: true });
+    window.addEventListener("hashchange", syncRoute);
+    window.addEventListener("load", syncRoute);
+    window.addEventListener("resize", function () {
+        var overlay = document.getElementById(overlayId);
+        var header = document.querySelector(".skinHeader");
+        if (overlay) overlay.style.top = Math.max(0, header ? header.getBoundingClientRect().bottom : 0) + "px";
+    });
+    document.addEventListener("viewshow", syncRoute);
+    syncRoute();
+})();
