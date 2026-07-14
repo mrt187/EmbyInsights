@@ -154,8 +154,6 @@ public sealed class PlaybackReportingStatisticsApi(
         var database = Path.Combine(configuration.ApplicationPaths.DataPath, "playback_reporting.db");
         var source = new PlaybackReportingDataSource(database);
         var pluginConfiguration = EmbyInsights.Plugin.Plugin.Instance?.Configuration;
-        if (pluginConfiguration?.PlaybackReportingEnabled == false)
-            return new PlaybackReportingStatisticsReader(source, _ => false);
         if (pluginConfiguration?.LibraryFilterEnabled != true)
             return new PlaybackReportingStatisticsReader(source);
 

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Release packages are shipped as one DLL. Emby supplies MediaBrowser.*, while the
+       SQLite wrapper is merged here; Emby supplies and initializes SQLitePCLRawEx.core. -->
+  <Target Name="ILRepacker" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
+    <ItemGroup>
+      <InputAssemblies Include="$(OutputPath)$(AssemblyName).dll" />
+      <InputAssemblies Include="$(OutputPath)SQLitePCL.pretty.dll" />
+    </ItemGroup>
+
+    <ILRepack
+      Parallel="true"
+      DebugInfo="false"
+      Internalize="true"
+      InputAssemblies="@(InputAssemblies)"
+      TargetKind="Dll"
+      OutputFile="$(OutputPath)$(AssemblyName).dll"
+      LibraryPath="$(MSBuildProjectDirectory)/../../lib"
+    />
+  </Target>
+</Project>

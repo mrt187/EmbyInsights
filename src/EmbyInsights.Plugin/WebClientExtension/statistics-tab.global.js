@@ -4,8 +4,7 @@
     var buttonId = "emby-insights-home-tab";
     var overlayId = "emby-insights-overlay";
     var openStateKey = "emby-insights-open";
-    var pluginId = "be7dcc0f-d8d7-498f-9d65-77db72239cee";
-    var assetVersion = "0.13.17";
+    var assetVersion = "0.2.0";
     var checking = false;
     var retryTimer = null;
 
@@ -20,6 +19,7 @@
     }
 
     function removeOverlay() {
+        document.body.classList.remove("emby-insights-active");
         var overlay = document.getElementById(overlayId);
         if (overlay) overlay.remove();
         var button = document.getElementById(buttonId);
@@ -35,6 +35,7 @@
 
     function showOverlay() {
         if (!isInsightsRoute()) return;
+        document.body.classList.add("emby-insights-active");
         if (!window.ApiClient || typeof window.EmbyInsightsDashboard !== "function") {
             if (!retryTimer) retryTimer = window.setTimeout(function () {
                 retryTimer = null;
@@ -113,11 +114,9 @@
         var homeTabs = findHomeTabs();
         if (!homeTabs) return;
         checking = true;
-        Promise.all([window.ApiClient.getCurrentUser(), window.ApiClient.getPluginConfiguration(pluginId)])
-            .then(function (results) {
-                var user = results[0];
-                var configuration = results[1];
-                if (!user || !user.Policy || !user.Policy.IsAdministrator || configuration.EnableWebClientExtension === false) return;
+        window.ApiClient.getCurrentUser()
+            .then(function (user) {
+                if (!user || !user.Policy || !user.Policy.IsAdministrator) return;
                 if (document.getElementById(buttonId) || !document.body.contains(homeTabs.slider)) return;
                 var button = document.createElement("button");
                 button.type = "button";
@@ -134,7 +133,7 @@
     }
 
     var style = document.createElement("style");
-    style.textContent = ".emby-insights-tab-button{appearance:none;background:transparent;border:0;border-radius:999px;color:rgba(255,255,255,.6);cursor:pointer;display:inline-block;font:inherit;font-weight:600;height:24.7656px;line-height:24.7656px;padding:0 16px}.emby-insights-tab-button:hover,.emby-insights-tab-button:focus{color:#fff;outline:none}.emby-insights-tab-button.active{background:rgba(189,189,189,.5);border-radius:999px;color:#fff}#emby-insights-overlay{background:#101416;bottom:0;left:0;overflow:auto;position:fixed;right:0;z-index:1090}#emby-insights-overlay>.view{height:100%}.emby-insights-loading{color:#aaa;display:grid;height:100%;place-items:center}.emby-insights-loading.error{color:#ff8a80}";
+    style.textContent = ".emby-insights-tab-button{appearance:none;background:transparent;border:0;border-radius:999px;color:rgba(255,255,255,.6);cursor:pointer;display:inline-block;font:inherit;font-weight:600;height:24.7656px;line-height:24.7656px;padding:0 16px}.emby-insights-tab-button:hover,.emby-insights-tab-button:focus{color:#fff;outline:none}.emby-insights-tab-button.active{background:rgba(189,189,189,.5);border-radius:999px;color:#fff}body.emby-insights-active .main-tab-button[data-index=\"0\"]{background:transparent!important}#emby-insights-overlay{background:#101416;bottom:0;left:0;overflow:auto;position:fixed;right:0;z-index:1090}#emby-insights-overlay>.view{height:100%}.emby-insights-loading{color:#aaa;display:grid;height:100%;place-items:center}.emby-insights-loading.error{color:#ff8a80}";
     document.head.appendChild(style);
 
     document.addEventListener("click", function (event) {

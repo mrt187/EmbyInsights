@@ -4,7 +4,7 @@
      data-forcescrollbar="true"
      data-centerfocus="true"
      data-bindheader="true"
-     data-controller="__plugin/EmbyInsightsConfigJs"
+     data-controller="__plugin/EmbyInsightsConfigJs0200"
      data-title="Emby Insights">
 
     <div class="scrollSlider flex-grow flex-direction-column padded-left padded-left-page padded-right padded-top-page padded-bottom-page">
@@ -24,6 +24,7 @@
             .eiSection[open] > summary::after { transform: rotate(90deg); }
             .eiSection > .verticalSection { padding: .9em .2em .3em; }
             .eiLibraryPicker { border-top:1px solid #3a3a3c; margin-top:1em; padding-top:1em; }.eiLibraryPicker>strong { display:block; margin-bottom:.25em; }.eiLibraryList { display:grid; gap:.55em; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); margin-top:.8em; }.eiLibraryOption { align-items:center; background:#2c2c2e; border:1px solid #3a3a3c; border-radius:8px; display:flex; gap:.65em; padding:.7em .8em; }.eiLibraryOption input { flex:0 0 auto; }
+            .eiDataNotice { background:#29292c; border-left:4px solid #52b788; border-radius:6px; line-height:1.55; padding:.9em 1em; }
             .eiMuted { color: #aaa; font-size: .9em; }
             .eiModalBackdrop { align-items:center; background:rgba(0,0,0,.65); display:none; inset:0; justify-content:center; position:fixed; z-index:10000; }
             .eiModalBackdrop.open { display:flex; }
@@ -33,15 +34,20 @@
             .eiLog { background:#000; border-radius:6px; color:#ddd; font-family:monospace; line-height:1.4; max-height:52vh; overflow:auto; padding:1em; white-space:pre-wrap; word-break:break-word; }
             .eiReadme { line-height:1.5; white-space:pre-wrap; }
             .eiReadmeIntro { color:#ccc; line-height:1.55; margin:.2em 0 1.2em; }
-            .eiReadmeGrid { display:grid; gap:.75em; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); }
+            .eiReadmeGrid { display:grid; gap:.75em; grid-template-columns:repeat(2,minmax(0,1fr)); }
             .eiReadmeCard { background:#29292c; border:1px solid #3b3b3e; border-radius:9px; padding:1em; }
             .eiReadmeCard strong { display:block; margin-bottom:.4em; }.eiReadmeCard p { color:#bbb; line-height:1.45; margin:0; }
+            @media (max-width:540px) { .eiReadmeGrid { grid-template-columns:1fr; } }
+            .eiInfoLead { font-size:1.08em; line-height:1.65; }
+            .eiInfoBadge { background:#1f5137; border:1px solid #2f8157; border-radius:999px; display:inline-block; font-size:.85em; font-weight:600; margin:.15em .35em .15em 0; padding:.35em .7em; }
+            .eiBetaNote { background:#29292c; border-left:4px solid #52b788; border-radius:6px; color:#ccc; line-height:1.5; margin-top:1.25em; padding:.85em 1em; }
+            .eiBetaNote a { color:#66d9a0; font-weight:600; }
         </style>
 
         <div class="eiHeader">
             <div class="eiIntro" style="margin:0;">
                 <h1 style="margin-bottom:.25em;">Emby Insights</h1>
-                <div class="fieldDescription" data-i18n="intro">Moderne, nur für Administratoren sichtbare Wiedergabestatistiken.</div>
+                <div class="fieldDescription" data-i18n="intro">Server-, Medien- und Nutzungsstatistiken – nur für Administratoren.</div>
             </div>
             <div class="eiHeaderButtons">
                 <button is="emby-button" type="button" id="BtnReadme" class="raised">📖 <span data-i18n="readme">Readme</span></button>
@@ -52,34 +58,9 @@
 
         <form id="EmbyInsightsConfigForm">
             <details class="eiSection">
-                <summary data-i18n="trackingSection">Datenerfassung</summary>
+                <summary data-i18n="sourcesSection">Datenbasis</summary>
                 <div class="verticalSection">
-                    <label class="emby-checkbox-label">
-                        <input is="emby-checkbox" type="checkbox" id="TrackingEnabled" />
-                        <span data-i18n="trackingEnabled">Native Wiedergabeerfassung aktivieren</span>
-                    </label>
-                    <div class="fieldDescription" data-i18n="trackingDescription">Erfasst neue Wiedergaben direkt über Emby Insights.</div>
-
-                    <div class="inputContainer" style="margin-top:1em;">
-                        <input is="emby-input" type="number" id="MinimumPlaybackSeconds" min="0" max="3600" label="Mindestwiedergabedauer (Sekunden)" data-i18n-label="minimumLabel" />
-                        <div class="fieldDescription" data-i18n="minimumDescription">Kürzere Sitzungen werden nicht als Wiedergabe gespeichert.</div>
-                    </div>
-
-                    <div class="inputContainer">
-                        <input is="emby-input" type="number" id="RetentionDays" min="0" max="36500" label="Aufbewahrung (Tage)" data-i18n-label="retentionLabel" />
-                        <div class="fieldDescription" data-i18n="retentionDescription">0 bewahrt Statistiken unbegrenzt auf.</div>
-                    </div>
-                </div>
-            </details>
-
-            <details class="eiSection">
-                <summary data-i18n="sourcesSection">Datenquellen</summary>
-                <div class="verticalSection">
-                    <label class="emby-checkbox-label">
-                        <input is="emby-checkbox" type="checkbox" id="PlaybackReportingEnabled" />
-                        <span data-i18n="playbackReportingEnabled">Playback Reporting verwenden</span>
-                    </label>
-                    <div class="fieldDescription" data-i18n="playbackReportingDescription">Liest vorhandene Wiedergaben aus Playback Reporting. Wird der Schalter deaktiviert, werden diese Daten nicht mehr in Insights verwendet.</div>
+                    <div class="eiDataNotice" data-i18n="dataBasisDescription">Server- und Medien-Fakten kommen direkt aus Emby. Für Nutzungsstatistiken ist Playback Reporting derzeit erforderlich; seine Datenbank wird ausschließlich gelesen und nie verändert.</div>
 
                     <div class="eiLibraryPicker">
                         <strong data-i18n="librarySelection">Bibliotheken für Insights</strong>
@@ -109,18 +90,6 @@
                 </div>
             </details>
 
-            <details class="eiSection">
-                <summary data-i18n="browserSection">Browser-Erweiterung</summary>
-                <div class="verticalSection">
-                    <label class="emby-checkbox-label">
-                        <input is="emby-checkbox" type="checkbox" id="EnableWebClientExtension" />
-                        <span data-i18n="browserEnabled">Admin-Tab „Insights“ aktivieren</span>
-                    </label>
-                    <div class="fieldDescription" data-i18n="browserDescription">Der Tab wird ausschließlich für Administratoren im Browser eingeblendet.</div>
-                    <button is="emby-button" type="button" id="BtnOpenStatistics" class="raised" style="margin-top:1em;" data-i18n="openStatistics">Insights öffnen</button>
-                </div>
-            </details>
-
             <div class="verticalSection" style="margin-top:1em;">
                 <button is="emby-button" type="submit" class="raised button-submit block">
                     <span data-i18n="save">Speichern</span>
@@ -131,27 +100,27 @@
 
     <div id="ReadmeModal" class="eiModalBackdrop"><div class="eiModal">
         <h2>📖 Emby Insights</h2>
-        <p class="eiReadmeIntro" data-i18n="readmeIntro">Wiedergabestatistiken für Emby-Administratoren – übersichtlich, direkt im Webclient und ohne Playback Reporting zu verändern.</p>
+        <p class="eiReadmeIntro" data-i18n="readmeIntro">Dein Emby-Server in Zahlen: Medienbestand, Server-Fakten und Nutzung übersichtlich gebündelt direkt im Webclient.</p>
         <div class="eiReadmeGrid">
-            <div class="eiReadmeCard"><strong data-i18n="readmeShowsTitle">Was wird angezeigt?</strong><p data-i18n="readmeShowsText">Wiedergabezeit, beliebte Filme und Serien, aktive Nutzer, Clients und Wiedergabemethoden.</p></div>
-            <div class="eiReadmeCard"><strong data-i18n="readmeSourceTitle">Woher kommen die Daten?</strong><p data-i18n="readmeSourceText">Aktuell aus der Playback-Reporting-Datenbank. Sie wird ausschließlich gelesen.</p></div>
+            <div class="eiReadmeCard"><strong data-i18n="readmeShowsTitle">Was wird angezeigt?</strong><p data-i18n="readmeShowsText">Gesamtwerte der ausgewählten Bibliotheken: Medienbestand und Speicherbedarf, Server-Fakten sowie Wiedergabezeit, Top-Titel, Nutzer, Clients und Wiedergabemethoden.</p></div>
+            <div class="eiReadmeCard"><strong data-i18n="readmeSourceTitle">Woher kommen die Daten?</strong><p data-i18n="readmeSourceText">Medien- und Server-Fakten kommen direkt aus Emby. Nutzungsdaten liest Insights ausschließlich aus Playback Reporting.</p></div>
+            <div class="eiReadmeCard"><strong data-i18n="readmeStorageTitle">Wo werden sie gespeichert?</strong><p data-i18n="readmeStorageText">Insights speichert aktuell keine eigene Kopie. Nutzungsdaten bleiben in Playback Reporting; eine eigene Datenbank ist als zukünftiges Feature geplant.</p></div>
             <div class="eiReadmeCard"><strong data-i18n="readmeAccessTitle">Wer kann die Daten sehen?</strong><p data-i18n="readmeAccessText">Nur Emby-Administratoren können den Statistik-Tab und seine Schnittstellen öffnen.</p></div>
         </div>
         <div class="eiModalActions"><button is="emby-button" type="button" data-close="ReadmeModal" class="raised" data-i18n="close">Schließen</button></div>
     </div></div>
     <div id="LogsModal" class="eiModalBackdrop"><div class="eiModal">
         <h2>📋 Emby Insights Logs</h2><pre id="LogsBody" class="eiLog" data-loading>Lädt…</pre>
-        <div class="eiModalActions"><button is="emby-button" type="button" id="BtnRefreshLogs" class="raised" data-i18n="refresh">Aktualisieren</button><button is="emby-button" type="button" data-close="LogsModal" class="raised" data-i18n="close">Schließen</button></div>
+        <div class="eiModalActions"><button is="emby-button" type="button" id="BtnOpenLogsNewTab" class="raised" data-i18n="openInNewTab">In neuem Tab öffnen</button><button is="emby-button" type="button" id="BtnRefreshLogs" class="raised" data-i18n="refresh">Aktualisieren</button><button is="emby-button" type="button" data-close="LogsModal" class="raised" data-i18n="close">Schließen</button></div>
     </div></div>
     <div id="InfoModal" class="eiModalBackdrop"><div class="eiModal">
         <h2>ℹ️ Emby Insights</h2>
-        <p data-i18n="infoDescription">Emby Insights zeigt Administratoren auf einen Blick, was auf dem Emby-Server angesehen wurde – zum Beispiel Wiedergabezeit, beliebte Filme und Serien sowie aktive Benutzer. Playback Reporting wird dabei nur gelesen und nicht verändert.</p>
+        <p class="eiInfoLead" data-i18n="infoDescription">Harte Fakten über deinen Server, direkt auf der Startseite: Emby Insights zeigt dir, was auf deinem Server abgeht, und beschert dir nebenbei den einen oder anderen Aha-Moment – nur für Administratoren und ohne Playback Reporting zu verändern. 😉</p>
+        <p><span class="eiInfoBadge" data-i18n="compatibilityBadge">✓ Emby Stable + Beta</span><span class="eiInfoBadge" data-i18n="readOnlyBadge">✓ Playback Reporting nur lesend</span></p>
         <hr>
         <h3 data-i18n="latestChanges">Letzte Änderungen</h3>
-        <p><strong>Version 0.13.17.0</strong></p>
-        <ul>
-            <li data-i18n="changeUncroppedBackdrops">Backdrop-Bilder werden vollständig und unbeschnitten über einem weichgezeichneten, kachelfüllenden Hintergrund dargestellt.</li>
-        </ul>
+        <div id="LatestChanges" data-i18n="loading">Lädt…</div>
+        <div class="eiBetaNote"><span data-i18n="betaNote">Emby Insights befindet sich noch in der Beta. Etwas entdeckt oder eine gute Idee?</span> <a href="https://github.com/mrt187/EmbyInsights/issues" target="_blank" rel="noopener noreferrer" data-i18n="githubIssues">Auf GitHub melden</a>.</div>
         <div class="eiModalActions"><button is="emby-button" type="button" data-close="InfoModal" class="raised" data-i18n="close">Schließen</button></div>
     </div></div>
 </div>

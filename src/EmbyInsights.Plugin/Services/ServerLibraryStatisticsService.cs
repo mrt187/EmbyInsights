@@ -53,13 +53,13 @@ public sealed class ServerLibraryStatisticsService(
         return library.GetItemsResult(query).TotalRecordCount;
     }
 
-    private static string FormatBytes(long bytes)
+    internal static string FormatBytes(long bytes)
     {
         string[] units = ["B", "KB", "MB", "GB", "TB", "PB"];
         var value = (double)Math.Max(0, bytes);
         var unit = 0;
         while (value >= 1024 && unit < units.Length - 1) { value /= 1024; unit++; }
-        return $"{Math.Ceiling(value):0} {units[unit]}";
+        return $"{Math.Round(value, MidpointRounding.AwayFromZero):0} {units[unit]}";
     }
 }
 

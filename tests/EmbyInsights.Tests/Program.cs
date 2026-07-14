@@ -1,7 +1,46 @@
 using EmbyInsights.DataSources;
 using EmbyInsights.Models;
 using EmbyInsights.Persistence;
+using EmbyInsights.ServerEntryPoints;
 using EmbyInsights.Services;
+
+await Run("storage size uses commercial rounding without decimals", () =>
+{
+    const long gibibyte = 1024L * 1024 * 1024;
+    Equal("1 GB", ServerLibraryStatisticsService.FormatBytes(gibibyte * 14 / 10));
+    Equal("2 GB", ServerLibraryStatisticsService.FormatBytes(gibibyte * 15 / 10));
+    Equal("2 GB", ServerLibraryStatisticsService.FormatBytes(gibibyte * 16 / 10));
+    return Task.CompletedTask;
+});
+
+await Run("web client tab: inserts both script tags before </body>", () =>
+{
+    var html = "<html><body>content</body></html>";
+    var withTab = IndexHtmlPatcher.UpsertScriptTag(html, "emby-insights-tab.js", "1.0.0");
+    var withBoth = IndexHtmlPatcher.UpsertScriptTag(withTab, "emby-insights/dashboard.js", "1.0.0");
+    Equal(true, withBoth.Contains("<script src=\"emby-insights-tab.js?v=1.0.0\"></script>"));
+    Equal(true, withBoth.Contains("<script src=\"emby-insights/dashboard.js?v=1.0.0\"></script>"));
+    Equal(1, System.Text.RegularExpressions.Regex.Matches(withBoth, "emby-insights-tab.js").Count);
+    return Task.CompletedTask;
+});
+
+await Run("web client tab: re-run is idempotent and bumps the version", () =>
+{
+    var html = "<html><body>content<script src=\"emby-insights-tab.js?v=1.0.0\"></script>\n</body></html>";
+    var updated = IndexHtmlPatcher.UpsertScriptTag(html, "emby-insights-tab.js", "1.0.1");
+    Equal(1, System.Text.RegularExpressions.Regex.Matches(updated, "emby-insights-tab.js").Count);
+    Equal(true, updated.Contains("emby-insights-tab.js?v=1.0.1"));
+    Equal(false, updated.Contains("v=1.0.0"));
+    return Task.CompletedTask;
+});
+
+await Run("web client tab: missing </body> leaves html untouched", () =>
+{
+    var html = "<html><body>no closing tag</html>";
+    var updated = IndexHtmlPatcher.UpsertScriptTag(html, "emby-insights-tab.js", "1.0.0");
+    Equal(html, updated);
+    return Task.CompletedTask;
+});
 
 await Run("statistics aggregation", async () =>
 {

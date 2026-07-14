@@ -1,0 +1,10 @@
+[
+  {
+    "Version": "0.2.0.0",
+    "Notes": [
+      "Erste öffentliche Beta mit Server-, Medien- und Nutzungsstatistiken für Emby Stable und Beta.",
+      "Speichergrößen werden ohne Nachkommastellen kaufmännisch gerundet.",
+      "Info-Modal und Dokumentation verlinken direkt auf GitHub Issues."
+    ]
+  }
+]

@@ -19,6 +19,18 @@ public sealed class GetInsightsReadme : IReturn<InsightsTextResult>
 {
 }
 
+[Route("/EmbyInsights/Changelog", "GET", Summary = "Returns the Emby Insights changelog")]
+[Authenticated(Roles = "Admin")]
+public sealed class GetInsightsChangelog : IReturn<InsightsChangelogEntry[]>
+{
+}
+
+public sealed class InsightsChangelogEntry
+{
+    public string Version { get; set; } = string.Empty;
+    public string[] Notes { get; set; } = [];
+}
+
 public sealed class InsightsTextResult
 {
     public string Text { get; set; } = string.Empty;
@@ -38,6 +50,17 @@ public sealed class PluginInfoService : BaseApiService
         if (stream is null) return new InsightsTextResult();
         using var reader = new StreamReader(stream);
         return new InsightsTextResult { Text = reader.ReadToEnd() };
+    }
+
+    public object Get(GetInsightsChangelog request)
+    {
+        using var stream = typeof(PluginInfoService).Assembly
+            .GetManifestResourceStream("EmbyInsights.Configuration.changelog.json");
+        if (stream is null) return Array.Empty<InsightsChangelogEntry>();
+
+        var options = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        return System.Text.Json.JsonSerializer.Deserialize<InsightsChangelogEntry[]>(stream, options)
+            ?? Array.Empty<InsightsChangelogEntry>();
     }
 
     private static string ReadLogs(int maximum)

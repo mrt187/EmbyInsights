@@ -2,23 +2,22 @@ define(["emby-input", "emby-button", "emby-checkbox", "emby-select"], function (
     "use strict";
 
     var pluginId = "be7dcc0f-d8d7-498f-9d65-77db72239cee";
+    var changelogCache = null;
 
     return function (view) {
         var language = "de";
         var words = {
             de: {
-                intro:"Moderne, nur für Administratoren sichtbare Wiedergabestatistiken.",readme:"Readme",logs:"Logs",info:"Info",
-                trackingSection:"Datenerfassung",trackingEnabled:"Native Wiedergabeerfassung aktivieren",trackingDescription:"Erfasst neue Wiedergaben direkt über Emby Insights.",minimumLabel:"Mindestwiedergabedauer (Sekunden)",minimumDescription:"Kürzere Sitzungen werden nicht als Wiedergabe gespeichert.",retentionLabel:"Aufbewahrung (Tage)",retentionDescription:"0 bewahrt Statistiken unbegrenzt auf.",
-                sourcesSection:"Datenquellen",playbackReportingEnabled:"Playback Reporting verwenden",playbackReportingDescription:"Liest vorhandene Wiedergaben aus Playback Reporting. Wird der Schalter deaktiviert, werden diese Daten nicht mehr in Insights verwendet.",librarySelection:"Bibliotheken für Insights",librarySelectionDescription:"Nur Medien aus den ausgewählten Bibliotheken werden in Statistiken und Server-Fakten berücksichtigt.",librariesError:"Bibliotheken konnten nicht geladen werden.",
-                displaySection:"Darstellung",languageLabel:"Sprache",languageDescription:"Sprache der Statistik- und Einstellungsseiten.",themeLabel:"Design",themeDescription:"Wählt das Erscheinungsbild des Insights-Tabs.",themeEmerald:"Emerald",themeTerminal:"Terminal Grid",browserSection:"Browser-Erweiterung",browserEnabled:"Admin-Tab „Insights“ aktivieren",browserDescription:"Der Tab wird ausschließlich für Administratoren im Browser eingeblendet.",openStatistics:"Insights öffnen",save:"Speichern",close:"Schließen",refresh:"Aktualisieren",loading:"Lädt…",noLogs:"Noch keine Emby-Insights-Logeinträge.",logsError:"Die Logs konnten nicht geladen werden.",readmeIntro:"Wiedergabestatistiken für Emby-Administratoren – übersichtlich, direkt im Webclient und ohne Playback Reporting zu verändern.",readmeShowsTitle:"Was wird angezeigt?",readmeShowsText:"Wiedergabezeit, beliebte Filme und Serien, aktive Nutzer und Clients.",readmeSourceTitle:"Woher kommen die Daten?",readmeSourceText:"Aktuell aus der Playback-Reporting-Datenbank. Sie wird ausschließlich gelesen.",readmeAccessTitle:"Wer kann die Daten sehen?",readmeAccessText:"Nur Emby-Administratoren können den Insights-Tab und seine Schnittstellen öffnen.",
-                infoDescription:"Emby Insights zeigt Administratoren auf einen Blick, was auf dem Emby-Server angesehen wurde – zum Beispiel Wiedergabezeit, beliebte Filme und Serien sowie aktive Benutzer. Playback Reporting wird dabei nur gelesen und nicht verändert.",latestChanges:"Letzte Änderungen",changeTranscodeDetails:"Detaillierte Playback-Reporting-Werte wie Transcode (v:h264 a:ac3) werden korrekt als Transcoding erkannt.",changeRealFacts:"Server- und Nutzer-Fakten verwenden jetzt zuverlässig echte Daten aus Emby und Playback Reporting.",changeClientTranscoding:"Nutzer-Fakten zeigen Top Nutzer, Top Clients und eine eigene Rangliste der transcodierenden Clients.",changeAlbumCount:"Alben werden bei aktiver Bibliotheksauswahl korrekt über die Album-IDs der enthaltenen Titel gezählt.",changeTerminalTheme:"Das neue optionale Terminal-Grid-Design verwendet technische Kacheln, Info-Labels in eckigen Klammern und Emby-Grün als Akzent.",changeHeaderPosters:"Titel und Emby-Version stehen nun mittig im Kopfbereich; Film- und Serienposter werden vollständig und unbeschnitten angezeigt.",changeBackdrops:"Top-Film und Top-Serie verwenden jetzt die passenden 16:9-Backdrop-Bilder; Poster dienen nur noch als unbeschnittener Fallback.",changeUncroppedBackdrops:"Backdrop-Bilder werden vollständig und unbeschnitten über einem weichgezeichneten, kachelfüllenden Hintergrund dargestellt."
+                intro:"Server-, Medien- und Nutzungsstatistiken – nur für Administratoren.",readme:"Readme",logs:"Logs",info:"Info",
+                sourcesSection:"Datenbasis",dataBasisDescription:"Server- und Medien-Fakten kommen direkt aus Emby. Für Nutzungsstatistiken ist Playback Reporting derzeit erforderlich; seine Datenbank wird ausschließlich gelesen und nie verändert.",librarySelection:"Bibliotheken für Insights",librarySelectionDescription:"Nur Medien aus den ausgewählten Bibliotheken werden in Statistiken und Server-Fakten berücksichtigt.",librariesError:"Bibliotheken konnten nicht geladen werden.",
+                displaySection:"Darstellung",languageLabel:"Sprache",languageDescription:"Sprache der Statistik- und Einstellungsseiten.",themeLabel:"Design",themeDescription:"Wählt das Erscheinungsbild des Insights-Tabs.",themeEmerald:"Emerald",themeTerminal:"Terminal Grid",save:"Speichern",saveError:"Speichern fehlgeschlagen: ",close:"Schließen",refresh:"Aktualisieren",openInNewTab:"In neuem Tab öffnen",loading:"Lädt…",noLogs:"Noch keine Emby-Insights-Logeinträge.",logsError:"Logs konnten nicht geladen werden: ",changelogError:"Versionshinweise konnten nicht geladen werden.",readmeIntro:"Dein Emby-Server in Zahlen: Medienbestand, Server-Fakten und Nutzung übersichtlich gebündelt direkt im Webclient.",readmeShowsTitle:"Was wird angezeigt?",readmeShowsText:"Gesamtwerte der ausgewählten Bibliotheken: Medienbestand und Speicherbedarf, Server-Fakten sowie Wiedergabezeit, Top-Titel, Nutzer, Clients und Wiedergabemethoden.",readmeSourceTitle:"Woher kommen die Daten?",readmeSourceText:"Medien- und Server-Fakten kommen direkt aus Emby. Nutzungsdaten liest Insights ausschließlich aus Playback Reporting; ohne das Plugin stehen derzeit keine Nutzungsdaten bereit.",readmeStorageTitle:"Wo werden sie gespeichert?",readmeStorageText:"Insights speichert aktuell keine eigene Kopie. Nutzungsdaten bleiben in Playback Reporting; eine eigene Datenbank ist als zukünftiges Feature geplant.",readmeAccessTitle:"Wer kann die Daten sehen?",readmeAccessText:"Nur Emby-Administratoren können den Insights-Tab und seine Schnittstellen öffnen.",
+                infoDescription:"Harte Fakten über deinen Server, direkt auf der Startseite: Emby Insights zeigt dir, was auf deinem Server abgeht, und beschert dir nebenbei den einen oder anderen Aha-Moment – nur für Administratoren und ohne Playback Reporting zu verändern. 😉",compatibilityBadge:"✓ Emby Stable + Beta",readOnlyBadge:"✓ Playback Reporting nur lesend",latestChanges:"Letzte Änderung",latestChange:"Der Insights-Tab ist jetzt fester Bestandteil des Plugins; der missverständliche Schalter für die Browser-Erweiterung wurde entfernt.",betaNote:"Emby Insights befindet sich noch in der Beta. Etwas entdeckt oder eine gute Idee?",githubIssues:"Auf GitHub melden"
             },
             en: {
-                intro:"Modern playback statistics visible only to administrators.",readme:"Readme",logs:"Logs",info:"Info",
-                trackingSection:"Data Collection",trackingEnabled:"Enable native playback tracking",trackingDescription:"Records new playback sessions directly through Emby Insights.",minimumLabel:"Minimum playback duration (seconds)",minimumDescription:"Shorter sessions are not stored as plays.",retentionLabel:"Retention (days)",retentionDescription:"0 keeps statistics indefinitely.",
-                sourcesSection:"Data Sources",playbackReportingEnabled:"Use Playback Reporting",playbackReportingDescription:"Reads existing plays from Playback Reporting. When disabled, those records are no longer used in Insights.",librarySelection:"Libraries for Insights",librarySelectionDescription:"Only media from the selected libraries is included in statistics and server facts.",librariesError:"Libraries could not be loaded.",
-                displaySection:"Display",languageLabel:"Language",languageDescription:"Language of the statistics and settings pages.",themeLabel:"Design",themeDescription:"Selects the appearance of the Insights tab.",themeEmerald:"Emerald",themeTerminal:"Terminal Grid",browserSection:"Browser Extension",browserEnabled:"Enable the admin Insights tab",browserDescription:"The tab is displayed only to administrators in the browser.",openStatistics:"Open Insights",save:"Save",close:"Close",refresh:"Refresh",loading:"Loading…",noLogs:"No Emby Insights log entries yet.",logsError:"The logs could not be loaded.",readmeIntro:"Playback statistics for Emby administrators, clearly presented in the web client without modifying Playback Reporting.",readmeShowsTitle:"What is displayed?",readmeShowsText:"Watch time, popular movies and series, active users, and clients.",readmeSourceTitle:"Where does the data come from?",readmeSourceText:"Currently from the Playback Reporting database, which is accessed read-only.",readmeAccessTitle:"Who can view the data?",readmeAccessText:"Only Emby administrators can open the Insights tab and its endpoints.",
-                infoDescription:"Emby Insights gives administrators a quick view of what has been watched on the Emby server, including watch time, popular movies and series, and active users. Playback Reporting is read only and is never modified.",latestChanges:"Latest Changes",changeTranscodeDetails:"Detailed Playback Reporting values such as Transcode (v:h264 a:ac3) are now correctly recognized as transcoding.",changeRealFacts:"Server and user facts now reliably use real data from Emby and Playback Reporting.",changeClientTranscoding:"User Facts now show Top Users, Top Clients, and a separate ranking of transcoding clients.",changeAlbumCount:"Albums are now counted correctly from the album ids of included tracks when library selection is enabled.",changeTerminalTheme:"The new optional Terminal Grid design uses technical cards, bracketed info labels, and Emby green as its accent.",changeHeaderPosters:"The title and Emby version are now centered in the header; movie and series posters are displayed fully without cropping.",changeBackdrops:"Top Movie and Top Series now use matching 16:9 backdrop images; posters are only used as an uncropped fallback.",changeUncroppedBackdrops:"Backdrop images are now shown fully and uncropped over a blurred background that fills the entire card."
+                intro:"Server, media, and usage statistics—visible only to administrators.",readme:"Readme",logs:"Logs",info:"Info",
+                sourcesSection:"Data Basis",dataBasisDescription:"Server and media facts come directly from Emby. Playback Reporting is currently required for usage statistics; its database is read only and never modified.",librarySelection:"Libraries for Insights",librarySelectionDescription:"Only media from the selected libraries is included in statistics and server facts.",librariesError:"Libraries could not be loaded.",
+                displaySection:"Display",languageLabel:"Language",languageDescription:"Language of the statistics and settings pages.",themeLabel:"Design",themeDescription:"Selects the appearance of the Insights tab.",themeEmerald:"Emerald",themeTerminal:"Terminal Grid",save:"Save",saveError:"Save failed: ",close:"Close",refresh:"Refresh",openInNewTab:"Open in new tab",loading:"Loading…",noLogs:"No Emby Insights log entries yet.",logsError:"Logs could not be loaded: ",changelogError:"Release notes could not be loaded.",readmeIntro:"Your Emby server in numbers: media collection, server facts, and usage neatly bundled in the web client.",readmeShowsTitle:"What is displayed?",readmeShowsText:"Totals for the selected libraries: media collection and storage, server facts, watch time, top titles, users, clients, and playback methods.",readmeSourceTitle:"Where does the data come from?",readmeSourceText:"Media and server facts come directly from Emby. Insights reads usage data exclusively from Playback Reporting; without it, usage data is currently unavailable.",readmeStorageTitle:"Where is it stored?",readmeStorageText:"Insights currently stores no separate copy. Usage data remains in Playback Reporting; a dedicated database is planned as a future feature.",readmeAccessTitle:"Who can view the data?",readmeAccessText:"Only Emby administrators can open the Insights tab and its endpoints.",
+                infoDescription:"Hard facts about your server, right on the home screen: Emby Insights shows you what is happening on your server and delivers the occasional aha moment along the way—just for administrators and without changing Playback Reporting. 😉",compatibilityBadge:"✓ Emby Stable + Beta",readOnlyBadge:"✓ Playback Reporting read only",latestChanges:"Latest change",latestChange:"The Insights tab is now a permanent part of the plugin; the misleading browser extension switch has been removed.",betaNote:"Emby Insights is still in beta. Found something or have a bright idea?",githubIssues:"Report it on GitHub"
             }
         };
 
@@ -35,6 +34,49 @@ define(["emby-input", "emby-button", "emby-checkbox", "emby-select"], function (
         function openModal(id) { view.querySelector("#" + id).classList.add("open"); }
         function closeModal(id) { view.querySelector("#" + id).classList.remove("open"); }
 
+        function describeError(error) {
+            if (error && typeof error.text === "function" && typeof error.status !== "undefined") {
+                var fallback = error.status + " " + (error.statusText || "Request failed");
+                return error.text().then(function (body) {
+                    var message = body;
+                    try {
+                        var json = JSON.parse(body);
+                        message = (json.ResponseStatus && json.ResponseStatus.Message) || json.Message || body;
+                    } catch (ignored) { /* Response body is plain text. */ }
+                    return (message && message.trim()) || fallback;
+                }).catch(function () { return fallback; });
+            }
+            return Promise.resolve(error && error.message ? error.message : String(error));
+        }
+
+        function renderChangelog(entries) {
+            var container = view.querySelector("#LatestChanges");
+            container.innerHTML = "";
+            var entry = (entries || [])[0];
+            if (!entry) return;
+            var version = document.createElement("p");
+            var strong = document.createElement("strong");
+            strong.textContent = "Version " + (entry.Version || entry.version || "");
+            version.appendChild(strong);
+            var list = document.createElement("ul");
+            (entry.Notes || entry.notes || []).forEach(function (note) {
+                var item = document.createElement("li");
+                item.textContent = note;
+                list.appendChild(item);
+            });
+            container.appendChild(version);
+            container.appendChild(list);
+        }
+
+        function loadChangelog() {
+            var container = view.querySelector("#LatestChanges");
+            if (changelogCache) { renderChangelog(changelogCache); return Promise.resolve(); }
+            container.textContent = t("loading");
+            return ApiClient.ajax({ type: "GET", url: ApiClient.getUrl("EmbyInsights/Changelog"), dataType: "json" })
+                .then(function (entries) { changelogCache = entries || []; renderChangelog(changelogCache); })
+                .catch(function () { container.textContent = t("changelogError"); });
+        }
+
         function loadReadme() {
             openModal("ReadmeModal");
         }
@@ -44,15 +86,25 @@ define(["emby-input", "emby-button", "emby-checkbox", "emby-select"], function (
             body.textContent = t("loading");
             return ApiClient.ajax({ type: "GET", url: ApiClient.getUrl("EmbyInsights/Logs", { MaxLines: 300 }), dataType: "json" })
                 .then(function (result) { body.textContent = result && result.Text ? result.Text : t("noLogs"); body.scrollTop = body.scrollHeight; })
-                .catch(function () { body.textContent = t("logsError"); });
+                .catch(function (error) { describeError(error).then(function (message) { body.textContent = t("logsError") + message; }); });
+        }
+
+        function escapeHtml(value) {
+            return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function openLogsInNewTab() {
+            var logText = view.querySelector("#LogsBody").textContent;
+            var html = '<pre style="white-space:pre-wrap;word-break:break-word;font-family:monospace;' +
+                'font-size:14px;line-height:1.4;background:#000;color:#ddd;padding:1em;margin:0">' +
+                escapeHtml(logText) + "</pre>";
+            var url = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+            window.open(url, "_blank");
+            window.setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
         }
 
         function setValue(id, value) {
             view.querySelector("#" + id).value = value;
-        }
-
-        function setChecked(id, value) {
-            view.querySelector("#" + id).checked = value === true;
         }
 
         function loadLibraries(config) {
@@ -82,11 +134,6 @@ define(["emby-input", "emby-button", "emby-checkbox", "emby-select"], function (
         function loadConfig() {
             Dashboard.showLoadingMsg();
             return ApiClient.getPluginConfiguration(pluginId).then(function (config) {
-                setChecked("TrackingEnabled", config.TrackingEnabled);
-                setChecked("PlaybackReportingEnabled", config.PlaybackReportingEnabled);
-                setChecked("EnableWebClientExtension", config.EnableWebClientExtension);
-                setValue("MinimumPlaybackSeconds", config.MinimumPlaybackSeconds == null ? 30 : config.MinimumPlaybackSeconds);
-                setValue("RetentionDays", config.RetentionDays == null ? 0 : config.RetentionDays);
                 setValue("Language", config.Language === "en" ? "en" : "de");
                 setValue("Theme", config.Theme === "terminal" ? "terminal" : "emerald");
                 language = config.Language === "en" ? "en" : "de";
@@ -101,11 +148,6 @@ define(["emby-input", "emby-button", "emby-checkbox", "emby-select"], function (
             event.preventDefault();
             Dashboard.showLoadingMsg();
             ApiClient.getPluginConfiguration(pluginId).then(function (config) {
-                config.TrackingEnabled = view.querySelector("#TrackingEnabled").checked;
-                config.PlaybackReportingEnabled = view.querySelector("#PlaybackReportingEnabled").checked;
-                config.EnableWebClientExtension = view.querySelector("#EnableWebClientExtension").checked;
-                config.MinimumPlaybackSeconds = Math.max(0, parseInt(view.querySelector("#MinimumPlaybackSeconds").value || "30", 10));
-                config.RetentionDays = Math.max(0, parseInt(view.querySelector("#RetentionDays").value || "0", 10));
                 config.Language = view.querySelector("#Language").value === "en" ? "en" : "de";
                 config.Theme = view.querySelector("#Theme").value === "terminal" ? "terminal" : "emerald";
                 if (view._insightsLibrariesLoaded) {
@@ -120,6 +162,7 @@ define(["emby-input", "emby-button", "emby-checkbox", "emby-select"], function (
             }).catch(function (error) {
                 console.error("Emby Insights settings save failed", error);
                 Dashboard.hideLoadingMsg();
+                describeError(error).then(function (message) { Dashboard.alert(t("saveError") + message); });
             });
         }
 
@@ -127,14 +170,11 @@ define(["emby-input", "emby-button", "emby-checkbox", "emby-select"], function (
         view.querySelector("#BtnReadme").addEventListener("click", loadReadme);
         view.querySelector("#BtnLogs").addEventListener("click", function () { openModal("LogsModal"); loadLogs(); });
         view.querySelector("#BtnRefreshLogs").addEventListener("click", loadLogs);
-        view.querySelector("#BtnInfo").addEventListener("click", function () { openModal("InfoModal"); });
+        view.querySelector("#BtnOpenLogsNewTab").addEventListener("click", openLogsInNewTab);
+        view.querySelector("#BtnInfo").addEventListener("click", function () { openModal("InfoModal"); loadChangelog(); });
         view.querySelector("#Language").addEventListener("change", function () {
             language = this.value === "en" ? "en" : "de";
             applyTranslations();
-        });
-        view.querySelector("#BtnOpenStatistics").addEventListener("click", function () {
-            window.sessionStorage.setItem("emby-insights-open", "1");
-            window.location.hash = "#!/home";
         });
         Array.prototype.forEach.call(view.querySelectorAll("[data-close]"), function (button) {
             button.addEventListener("click", function () { closeModal(button.getAttribute("data-close")); });

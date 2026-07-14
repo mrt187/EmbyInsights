@@ -7,7 +7,7 @@ using MediaBrowser.Model.Serialization;
 
 namespace EmbyInsights.Plugin;
 
-/// <summary>Emby Server entry point, compiled against Mini's current beta assemblies.</summary>
+/// <summary>Emby Server entry point, compiled against Emby Stable 4.9.5 so it also rolls forward to Beta.</summary>
 public sealed class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages, IHasThumbImage
 {
     public static Plugin? Instance { get; private set; }
@@ -32,13 +32,13 @@ public sealed class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages, IHas
         const string resourcePrefix = "EmbyInsights.WebClientExtension";
         yield return new PluginPageInfo
         {
-            Name = "EmbyInsights",
+            Name = "EmbyInsights0200",
             EmbeddedResourcePath = $"{configurationPrefix}.configPage.html",
             IsMainConfigPage = true
         };
         yield return new PluginPageInfo
         {
-            Name = "EmbyInsightsConfigJs",
+            Name = "EmbyInsightsConfigJs0200",
             EmbeddedResourcePath = $"{configurationPrefix}.configPage.js"
         };
         yield return new PluginPageInfo
