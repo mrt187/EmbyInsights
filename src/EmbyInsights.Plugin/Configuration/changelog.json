@@ -1,5 +1,13 @@
 [
   {
+    "Version": "0.2.2.0",
+    "Notes": [
+      "Webclient-Dateien werden zusätzlich in Embys persistenten Datenordner exportiert, damit Docker-Hosts sie nach Image-Updates automatisch wiederherstellen können.",
+      "Die Einstellungsseite zeigt an, ob der Insights-Tab installiert ist oder ein Host-Reparaturhelfer benötigt wird.",
+      "Ein allgemeiner Docker-/Unraid-Reparaturhelfer und eine Installationsanleitung wurden ergänzt."
+    ]
+  },
+  {
     "Version": "0.2.1.0",
     "Notes": [
       "Der GitHub-Issues-Link im Info-Dialog wird zuverlässig außerhalb der Emby-Navigation geöffnet."

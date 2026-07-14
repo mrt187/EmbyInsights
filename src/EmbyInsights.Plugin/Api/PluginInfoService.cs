@@ -1,5 +1,6 @@
 using System.Text;
 using EmbyInsights.Plugin;
+using EmbyInsights.ServerEntryPoints;
 using MediaBrowser.Controller.Api;
 using MediaBrowser.Controller.Net;
 using MediaBrowser.Model.Services;
@@ -22,6 +23,12 @@ public sealed class GetInsightsReadme : IReturn<InsightsTextResult>
 [Route("/EmbyInsights/Changelog", "GET", Summary = "Returns the Emby Insights changelog")]
 [Authenticated(Roles = "Admin")]
 public sealed class GetInsightsChangelog : IReturn<InsightsChangelogEntry[]>
+{
+}
+
+[Route("/EmbyInsights/WebClientStatus", "GET", Summary = "Returns the Insights web client installation status")]
+[Authenticated(Roles = "Admin")]
+public sealed class GetInsightsWebClientStatus : IReturn<WebClientInstallationStatus>
 {
 }
 
@@ -62,6 +69,8 @@ public sealed class PluginInfoService : BaseApiService
         return System.Text.Json.JsonSerializer.Deserialize<InsightsChangelogEntry[]>(stream, options)
             ?? Array.Empty<InsightsChangelogEntry>();
     }
+
+    public object Get(GetInsightsWebClientStatus request) => WebClientInstallationState.Current;
 
     private static string ReadLogs(int maximum)
     {

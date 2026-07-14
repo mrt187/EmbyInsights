@@ -4,7 +4,7 @@
     <AssemblyName>EmbyInsights.Plugin</AssemblyName>
     <RootNamespace>EmbyInsights</RootNamespace>
     <Description>Admin playback analytics for Emby.</Description>
-    <Version>0.2.1.0</Version>
+    <Version>0.2.2.0</Version>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 

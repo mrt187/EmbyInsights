@@ -4,7 +4,7 @@
      data-forcescrollbar="true"
      data-centerfocus="true"
      data-bindheader="true"
-     data-controller="__plugin/EmbyInsightsConfigJs0200"
+     data-controller="__plugin/EmbyInsightsConfigJs0202"
      data-title="Emby Insights">
 
     <div class="scrollSlider flex-grow flex-direction-column padded-left padded-left-page padded-right padded-top-page padded-bottom-page">
@@ -25,6 +25,10 @@
             .eiSection > .verticalSection { padding: .9em .2em .3em; }
             .eiLibraryPicker { border-top:1px solid #3a3a3c; margin-top:1em; padding-top:1em; }.eiLibraryPicker>strong { display:block; margin-bottom:.25em; }.eiLibraryList { display:grid; gap:.55em; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); margin-top:.8em; }.eiLibraryOption { align-items:center; background:#2c2c2e; border:1px solid #3a3a3c; border-radius:8px; display:flex; gap:.65em; padding:.7em .8em; }.eiLibraryOption input { flex:0 0 auto; }
             .eiDataNotice { background:#29292c; border-left:4px solid #52b788; border-radius:6px; line-height:1.55; padding:.9em 1em; }
+            .eiWebStatus { background:#29292c; border-left:4px solid #888; border-radius:6px; line-height:1.55; padding:.9em 1em; }
+            .eiWebStatus.ok { border-left-color:#52b788; }
+            .eiWebStatus.warning { border-left-color:#ffb74d; }
+            .eiWebStatus code { display:block; margin-top:.5em; overflow-wrap:anywhere; }
             .eiMuted { color: #aaa; font-size: .9em; }
             .eiModalBackdrop { align-items:center; background:rgba(0,0,0,.65); display:none; inset:0; justify-content:center; position:fixed; z-index:10000; }
             .eiModalBackdrop.open { display:flex; }
@@ -87,6 +91,14 @@
                         </select>
                         <div class="fieldDescription" data-i18n="themeDescription">Wählt das Erscheinungsbild des Insights-Tabs.</div>
                     </div>
+                </div>
+            </details>
+
+            <details class="eiSection">
+                <summary data-i18n="webClientSection">Webclient integration</summary>
+                <div class="verticalSection">
+                    <div id="WebClientStatus" class="eiWebStatus" data-i18n="loading">Loading…</div>
+                    <div class="fieldDescription" style="margin-top:.75em;" data-i18n="webClientDescription">On restricted Docker installations, configure the host repair helper once so the tab is restored after image updates.</div>
                 </div>
             </details>
 

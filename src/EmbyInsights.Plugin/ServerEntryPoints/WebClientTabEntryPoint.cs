@@ -26,17 +26,39 @@ public sealed class WebClientTabEntryPoint : IServerEntryPoint
 
     public void Run()
     {
+        var assetDirectory = Path.Combine(_configuration.ApplicationPaths.DataPath, "emby-insights-web");
         try
         {
-            InstallWebClientExtension();
+            ExportWebClientAssets(assetDirectory);
+            InstallWebClientExtension(assetDirectory);
+            WebClientInstallationState.Update(new WebClientInstallationStatus
+            {
+                Installed = true,
+                AssetDirectory = assetDirectory,
+                Detail = "The Insights tab is installed in the Emby web client."
+            });
         }
         catch (Exception ex)
         {
             _logger.Warn("Web client tab could not be installed: {0}", ex.Message);
+            WebClientInstallationState.Update(new WebClientInstallationStatus
+            {
+                HostRepairRequired = true,
+                AssetDirectory = assetDirectory,
+                Detail = ex.Message
+            });
         }
     }
 
-    private void InstallWebClientExtension()
+    private void ExportWebClientAssets(string assetDirectory)
+    {
+        Directory.CreateDirectory(assetDirectory);
+        ExtractResource("statistics-tab.global.js", Path.Combine(assetDirectory, "emby-insights-tab.js"));
+        ExtractResource("statistics.html", Path.Combine(assetDirectory, "dashboard.html"));
+        ExtractResource("statistics.js", Path.Combine(assetDirectory, "dashboard.js"));
+    }
+
+    private void InstallWebClientExtension(string assetDirectory)
     {
         var dashboardUiPath = Path.Combine(_configuration.ApplicationPaths.ProgramSystemPath, "dashboard-ui");
         var indexPath = Path.Combine(dashboardUiPath, "index.html");
@@ -50,9 +72,9 @@ public sealed class WebClientTabEntryPoint : IServerEntryPoint
         var insightsDir = Path.Combine(dashboardUiPath, "emby-insights");
         Directory.CreateDirectory(insightsDir);
 
-        ExtractResource("statistics-tab.global.js", Path.Combine(dashboardUiPath, "emby-insights-tab.js"));
-        ExtractResource("statistics.html", Path.Combine(insightsDir, "dashboard.html"));
-        ExtractResource("statistics.js", Path.Combine(insightsDir, "dashboard.js"));
+        File.Copy(Path.Combine(assetDirectory, "emby-insights-tab.js"), Path.Combine(dashboardUiPath, "emby-insights-tab.js"), true);
+        File.Copy(Path.Combine(assetDirectory, "dashboard.html"), Path.Combine(insightsDir, "dashboard.html"), true);
+        File.Copy(Path.Combine(assetDirectory, "dashboard.js"), Path.Combine(insightsDir, "dashboard.js"), true);
 
         PatchIndexHtml(indexPath, version);
     }

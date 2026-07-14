@@ -48,11 +48,22 @@ statistics cannot currently be displayed.
 To update the plugin, replace the existing DLL and restart Emby. Your Emby and
 Playback Reporting data will not be modified.
 
-> **Docker note:** Some Emby containers prevent plugins from changing the web
-> client. In that case, Emby Insights appears under installed plugins, but the
-> Insights home-screen tab may be missing. Please open an
-> [issue](https://github.com/mrt187/EmbyInsights/issues) and include your Emby
-> version and installation type.
+### Docker and Unraid
+
+Some containers run Emby without permission to change the bundled web client.
+Insights exports its web files to `/config/data/emby-insights-web`, but a host
+helper must copy them into the container after an image update.
+
+1. Copy [`scripts/restore-web-client.sh`](scripts/restore-web-client.sh) to the
+   Docker host and make it executable.
+2. Run it after Emby has started:
+   `./restore-web-client.sh --container emby`
+3. Configure the same command as a startup hook or recurring job. On Unraid,
+   add it as a User Script scheduled every minute. The helper exits immediately
+   when the tab is already installed.
+
+The **Web client integration** section on the plugin settings page shows whether
+this host helper is required. A full browser reload may be needed after repair.
 
 ## Privacy
 

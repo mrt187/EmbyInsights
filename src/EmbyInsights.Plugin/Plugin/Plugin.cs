@@ -32,13 +32,13 @@ public sealed class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages, IHas
         const string resourcePrefix = "EmbyInsights.WebClientExtension";
         yield return new PluginPageInfo
         {
-            Name = "EmbyInsights0200",
+            Name = "EmbyInsights0202",
             EmbeddedResourcePath = $"{configurationPrefix}.configPage.html",
             IsMainConfigPage = true
         };
         yield return new PluginPageInfo
         {
-            Name = "EmbyInsightsConfigJs0200",
+            Name = "EmbyInsightsConfigJs0202",
             EmbeddedResourcePath = $"{configurationPrefix}.configPage.js"
         };
         yield return new PluginPageInfo

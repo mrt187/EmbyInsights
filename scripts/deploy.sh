@@ -4,7 +4,7 @@ set -euo pipefail
 HOST=""
 PLUGIN_DIR=""
 CONTAINER="emby"
-VERSION="0.2.1"
+VERSION="0.2.2"
 
 usage() {
   echo "Usage: $0 --host HOST --plugin-dir PATH [--container NAME]"

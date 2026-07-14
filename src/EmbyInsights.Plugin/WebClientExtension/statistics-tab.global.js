@@ -4,7 +4,7 @@
     var buttonId = "emby-insights-home-tab";
     var overlayId = "emby-insights-overlay";
     var openStateKey = "emby-insights-open";
-    var assetVersion = "0.2.0";
+    var assetVersion = "0.2.2";
     var checking = false;
     var retryTimer = null;
 

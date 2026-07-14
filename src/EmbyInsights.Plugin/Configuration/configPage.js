@@ -10,13 +10,13 @@ define(["emby-input", "emby-button", "emby-checkbox", "emby-select"], function (
             de: {
                 intro:"Server-, Medien- und Nutzungsstatistiken – nur für Administratoren.",readme:"Readme",logs:"Logs",info:"Info",
                 sourcesSection:"Datenbasis",dataBasisDescription:"Server- und Medien-Fakten kommen direkt aus Emby. Für Nutzungsstatistiken ist Playback Reporting derzeit erforderlich; seine Datenbank wird ausschließlich gelesen und nie verändert.",librarySelection:"Bibliotheken für Insights",librarySelectionDescription:"Nur Medien aus den ausgewählten Bibliotheken werden in Statistiken und Server-Fakten berücksichtigt.",librariesError:"Bibliotheken konnten nicht geladen werden.",
-                displaySection:"Darstellung",languageLabel:"Sprache",languageDescription:"Sprache der Statistik- und Einstellungsseiten.",themeLabel:"Design",themeDescription:"Wählt das Erscheinungsbild des Insights-Tabs.",themeEmerald:"Emerald",themeTerminal:"Terminal Grid",save:"Speichern",saveError:"Speichern fehlgeschlagen: ",close:"Schließen",refresh:"Aktualisieren",openInNewTab:"In neuem Tab öffnen",loading:"Lädt…",noLogs:"Noch keine Emby-Insights-Logeinträge.",logsError:"Logs konnten nicht geladen werden: ",changelogError:"Versionshinweise konnten nicht geladen werden.",readmeIntro:"Dein Emby-Server in Zahlen: Medienbestand, Server-Fakten und Nutzung übersichtlich gebündelt direkt im Webclient.",readmeShowsTitle:"Was wird angezeigt?",readmeShowsText:"Gesamtwerte der ausgewählten Bibliotheken: Medienbestand und Speicherbedarf, Server-Fakten sowie Wiedergabezeit, Top-Titel, Nutzer, Clients und Wiedergabemethoden.",readmeSourceTitle:"Woher kommen die Daten?",readmeSourceText:"Medien- und Server-Fakten kommen direkt aus Emby. Nutzungsdaten liest Insights ausschließlich aus Playback Reporting; ohne das Plugin stehen derzeit keine Nutzungsdaten bereit.",readmeStorageTitle:"Wo werden sie gespeichert?",readmeStorageText:"Insights speichert aktuell keine eigene Kopie. Nutzungsdaten bleiben in Playback Reporting; eine eigene Datenbank ist als zukünftiges Feature geplant.",readmeAccessTitle:"Wer kann die Daten sehen?",readmeAccessText:"Nur Emby-Administratoren können den Insights-Tab und seine Schnittstellen öffnen.",
+                displaySection:"Darstellung",languageLabel:"Sprache",languageDescription:"Sprache der Statistik- und Einstellungsseiten.",themeLabel:"Design",themeDescription:"Wählt das Erscheinungsbild des Insights-Tabs.",themeEmerald:"Emerald",themeTerminal:"Terminal Grid",webClientSection:"Webclient-Integration",webClientDescription:"Bei eingeschränkten Docker-Installationen muss der Host-Reparaturhelfer einmalig eingerichtet werden, damit der Tab nach Image-Updates automatisch wiederhergestellt wird.",webClientInstalled:"Der Insights-Tab ist im Emby-Webclient installiert.",webClientRepair:"Der Emby-Prozess darf den Webclient nicht verändern. Richte scripts/restore-web-client.sh auf dem Docker-Host als regelmäßigen oder Start-Hook ein.",webClientError:"Webclient-Status konnte nicht geladen werden.",assetDirectory:"Exportierte Dateien",save:"Speichern",saveError:"Speichern fehlgeschlagen: ",close:"Schließen",refresh:"Aktualisieren",openInNewTab:"In neuem Tab öffnen",loading:"Lädt…",noLogs:"Noch keine Emby-Insights-Logeinträge.",logsError:"Logs konnten nicht geladen werden: ",changelogError:"Versionshinweise konnten nicht geladen werden.",readmeIntro:"Dein Emby-Server in Zahlen: Medienbestand, Server-Fakten und Nutzung übersichtlich gebündelt direkt im Webclient.",readmeShowsTitle:"Was wird angezeigt?",readmeShowsText:"Gesamtwerte der ausgewählten Bibliotheken: Medienbestand und Speicherbedarf, Server-Fakten sowie Wiedergabezeit, Top-Titel, Nutzer, Clients und Wiedergabemethoden.",readmeSourceTitle:"Woher kommen die Daten?",readmeSourceText:"Medien- und Server-Fakten kommen direkt aus Emby. Nutzungsdaten liest Insights ausschließlich aus Playback Reporting; ohne das Plugin stehen derzeit keine Nutzungsdaten bereit.",readmeStorageTitle:"Wo werden sie gespeichert?",readmeStorageText:"Insights speichert aktuell keine eigene Kopie. Nutzungsdaten bleiben in Playback Reporting; eine eigene Datenbank ist als zukünftiges Feature geplant.",readmeAccessTitle:"Wer kann die Daten sehen?",readmeAccessText:"Nur Emby-Administratoren können den Insights-Tab und seine Schnittstellen öffnen.",
                 infoDescription:"Harte Fakten über deinen Server, direkt auf der Startseite: Emby Insights zeigt dir, was auf deinem Server abgeht, und beschert dir nebenbei den einen oder anderen Aha-Moment – nur für Administratoren und ohne Playback Reporting zu verändern. 😉",compatibilityBadge:"✓ Emby Stable + Beta",readOnlyBadge:"✓ Playback Reporting nur lesend",latestChanges:"Letzte Änderung",latestChange:"Der Insights-Tab ist jetzt fester Bestandteil des Plugins; der missverständliche Schalter für die Browser-Erweiterung wurde entfernt.",betaNote:"Emby Insights befindet sich noch in der Beta. Etwas entdeckt oder eine gute Idee?",githubIssues:"Auf GitHub melden"
             },
             en: {
                 intro:"Server, media, and usage statistics—visible only to administrators.",readme:"Readme",logs:"Logs",info:"Info",
                 sourcesSection:"Data Basis",dataBasisDescription:"Server and media facts come directly from Emby. Playback Reporting is currently required for usage statistics; its database is read only and never modified.",librarySelection:"Libraries for Insights",librarySelectionDescription:"Only media from the selected libraries is included in statistics and server facts.",librariesError:"Libraries could not be loaded.",
-                displaySection:"Display",languageLabel:"Language",languageDescription:"Language of the statistics and settings pages.",themeLabel:"Design",themeDescription:"Selects the appearance of the Insights tab.",themeEmerald:"Emerald",themeTerminal:"Terminal Grid",save:"Save",saveError:"Save failed: ",close:"Close",refresh:"Refresh",openInNewTab:"Open in new tab",loading:"Loading…",noLogs:"No Emby Insights log entries yet.",logsError:"Logs could not be loaded: ",changelogError:"Release notes could not be loaded.",readmeIntro:"Your Emby server in numbers: media collection, server facts, and usage neatly bundled in the web client.",readmeShowsTitle:"What is displayed?",readmeShowsText:"Totals for the selected libraries: media collection and storage, server facts, watch time, top titles, users, clients, and playback methods.",readmeSourceTitle:"Where does the data come from?",readmeSourceText:"Media and server facts come directly from Emby. Insights reads usage data exclusively from Playback Reporting; without it, usage data is currently unavailable.",readmeStorageTitle:"Where is it stored?",readmeStorageText:"Insights currently stores no separate copy. Usage data remains in Playback Reporting; a dedicated database is planned as a future feature.",readmeAccessTitle:"Who can view the data?",readmeAccessText:"Only Emby administrators can open the Insights tab and its endpoints.",
+                displaySection:"Display",languageLabel:"Language",languageDescription:"Language of the statistics and settings pages.",themeLabel:"Design",themeDescription:"Selects the appearance of the Insights tab.",themeEmerald:"Emerald",themeTerminal:"Terminal Grid",webClientSection:"Web client integration",webClientDescription:"On restricted Docker installations, configure the host repair helper once so the tab is restored automatically after image updates.",webClientInstalled:"The Insights tab is installed in the Emby web client.",webClientRepair:"The Emby process cannot modify the web client. Configure scripts/restore-web-client.sh on the Docker host as a recurring or startup hook.",webClientError:"The web client status could not be loaded.",assetDirectory:"Exported files",save:"Save",saveError:"Save failed: ",close:"Close",refresh:"Refresh",openInNewTab:"Open in new tab",loading:"Loading…",noLogs:"No Emby Insights log entries yet.",logsError:"Logs could not be loaded: ",changelogError:"Release notes could not be loaded.",readmeIntro:"Your Emby server in numbers: media collection, server facts, and usage neatly bundled in the web client.",readmeShowsTitle:"What is displayed?",readmeShowsText:"Totals for the selected libraries: media collection and storage, server facts, watch time, top titles, users, clients, and playback methods.",readmeSourceTitle:"Where does the data come from?",readmeSourceText:"Media and server facts come directly from Emby. Insights reads usage data exclusively from Playback Reporting; without it, usage data is currently unavailable.",readmeStorageTitle:"Where is it stored?",readmeStorageText:"Insights currently stores no separate copy. Usage data remains in Playback Reporting; a dedicated database is planned as a future feature.",readmeAccessTitle:"Who can view the data?",readmeAccessText:"Only Emby administrators can open the Insights tab and its endpoints.",
                 infoDescription:"Hard facts about your server, right on the home screen: Emby Insights shows you what is happening on your server and delivers the occasional aha moment along the way—just for administrators and without changing Playback Reporting. 😉",compatibilityBadge:"✓ Emby Stable + Beta",readOnlyBadge:"✓ Playback Reporting read only",latestChanges:"Latest change",latestChange:"The Insights tab is now a permanent part of the plugin; the misleading browser extension switch has been removed.",betaNote:"Emby Insights is still in beta. Found something or have a bright idea?",githubIssues:"Report it on GitHub"
             }
         };
@@ -89,6 +89,27 @@ define(["emby-input", "emby-button", "emby-checkbox", "emby-select"], function (
                 .catch(function (error) { describeError(error).then(function (message) { body.textContent = t("logsError") + message; }); });
         }
 
+        var webClientStatus = null;
+        function renderWebClientStatus() {
+            var target = view.querySelector("#WebClientStatus");
+            if (!webClientStatus) return;
+            var installed = webClientStatus.Installed === true || webClientStatus.installed === true;
+            var assetDirectory = webClientStatus.AssetDirectory || webClientStatus.assetDirectory || "";
+            target.className = "eiWebStatus " + (installed ? "ok" : "warning");
+            target.textContent = t(installed ? "webClientInstalled" : "webClientRepair");
+            if (assetDirectory) {
+                var path = document.createElement("code");
+                path.textContent = t("assetDirectory") + ": " + assetDirectory;
+                target.appendChild(path);
+            }
+        }
+
+        function loadWebClientStatus() {
+            return ApiClient.ajax({ type: "GET", url: ApiClient.getUrl("EmbyInsights/WebClientStatus"), dataType: "json" })
+                .then(function (status) { webClientStatus = status; renderWebClientStatus(); })
+                .catch(function () { view.querySelector("#WebClientStatus").textContent = t("webClientError"); });
+        }
+
         function escapeHtml(value) {
             return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
@@ -145,7 +166,8 @@ define(["emby-input", "emby-button", "emby-checkbox", "emby-select"], function (
                 setValue("Theme", config.Theme === "terminal" ? "terminal" : "emerald");
                 language = config.Language === "en" ? "en" : "de";
                 applyTranslations();
-                return loadLibraries(config);
+                renderWebClientStatus();
+                return Promise.all([loadLibraries(config), loadWebClientStatus()]);
             }).finally(function () {
                 Dashboard.hideLoadingMsg();
             });
@@ -183,6 +205,7 @@ define(["emby-input", "emby-button", "emby-checkbox", "emby-select"], function (
         view.querySelector("#Language").addEventListener("change", function () {
             language = this.value === "en" ? "en" : "de";
             applyTranslations();
+            renderWebClientStatus();
         });
         Array.prototype.forEach.call(view.querySelectorAll("[data-close]"), function (button) {
             button.addEventListener("click", function () { closeModal(button.getAttribute("data-close")); });
