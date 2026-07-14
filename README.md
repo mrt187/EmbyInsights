@@ -74,3 +74,8 @@ Native data collection planned for a future version is described in the
 Emby Insights is available under the [MIT License](LICENSE). You may use, modify,
 and redistribute the plugin. Information about bundled components is available in
 [Third-Party Notices](THIRD-PARTY-NOTICES.md).
+
+## Development note
+
+AI-assisted tools were used during development and code review. All changes were
+tested, reviewed, and approved by the project maintainer.
