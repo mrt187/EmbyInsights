@@ -48,9 +48,11 @@ statistics cannot currently be displayed.
 To update the plugin, replace the existing DLL and restart Emby. Your Emby and
 Playback Reporting data will not be modified.
 
-> Some Docker installations mount the Emby web client as read-only. If the
-> Insights tab does not appear after restarting, please check
-> [Issues](https://github.com/mrt187/EmbyInsights/issues) for help.
+> **Docker note:** Some Emby containers prevent plugins from changing the web
+> client. In that case, Emby Insights appears under installed plugins, but the
+> Insights home-screen tab may be missing. Please open an
+> [issue](https://github.com/mrt187/EmbyInsights/issues) and include your Emby
+> version and installation type.
 
 ## Privacy
 
