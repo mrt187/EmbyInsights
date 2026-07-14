@@ -77,4 +77,4 @@ and redistribute the plugin. Information about bundled components is available i
 
 ## Development note
 
-AI-assisted tools were used during development and code review.
+This project was developed using AI-assisted coding tools.
