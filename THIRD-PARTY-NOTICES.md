@@ -1,8 +1,8 @@
-# Hinweise zu Drittanbieter-Komponenten
+# Third-Party Notices
 
-Die Release-DLL enthält **SQLitePCL.pretty**, das unter der
-[Apache License 2.0](LICENSES/Apache-2.0.txt) veröffentlicht wird. Copyright- und
-Lizenzrechte verbleiben bei den jeweiligen Urhebern.
+The release DLL includes **SQLitePCL.pretty**, which is distributed under the
+[Apache License 2.0](LICENSES/Apache-2.0.txt). Copyright and license rights remain
+with their respective owners.
 
-Emby und Playback Reporting sind eigenständige Projekte und nicht Bestandteil
-von Emby Insights.
+Emby and Playback Reporting are independent projects and are not part of
+Emby Insights.
