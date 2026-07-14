@@ -103,6 +103,13 @@ define(["emby-input", "emby-button", "emby-checkbox", "emby-select"], function (
             window.setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
         }
 
+        function openGitHubIssues(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            var popup = window.open("https://github.com/mrt187/EmbyInsights/issues", "_blank", "noopener,noreferrer");
+            if (popup) popup.opener = null;
+        }
+
         function setValue(id, value) {
             view.querySelector("#" + id).value = value;
         }
@@ -171,6 +178,7 @@ define(["emby-input", "emby-button", "emby-checkbox", "emby-select"], function (
         view.querySelector("#BtnLogs").addEventListener("click", function () { openModal("LogsModal"); loadLogs(); });
         view.querySelector("#BtnRefreshLogs").addEventListener("click", loadLogs);
         view.querySelector("#BtnOpenLogsNewTab").addEventListener("click", openLogsInNewTab);
+        view.querySelector("#GithubIssuesLink").addEventListener("click", openGitHubIssues);
         view.querySelector("#BtnInfo").addEventListener("click", function () { openModal("InfoModal"); loadChangelog(); });
         view.querySelector("#Language").addEventListener("change", function () {
             language = this.value === "en" ? "en" : "de";

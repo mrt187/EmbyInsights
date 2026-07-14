@@ -1,5 +1,11 @@
 [
   {
+    "Version": "0.2.1.0",
+    "Notes": [
+      "Der GitHub-Issues-Link im Info-Dialog wird zuverlässig außerhalb der Emby-Navigation geöffnet."
+    ]
+  },
+  {
     "Version": "0.2.0.0",
     "Notes": [
       "Erste öffentliche Beta mit Server-, Medien- und Nutzungsstatistiken für Emby Stable und Beta.",
