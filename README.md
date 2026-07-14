@@ -6,11 +6,11 @@ screen**, visible only to administrators.
 
 > **Note:** Emby Insights is currently in beta.
 
-![Server Facts showing the media collection, storage usage, and top titles](emby-server-facts1.png)
+![Server Facts showing the media collection, storage usage, and top titles](docs/images/emby-server-facts1.png)
 
 *Server Facts: media collection, storage usage, plugins, backups, and popular titles.*
 
-![User Facts showing top users, clients, and transcoding activity](emby-user-facts2.png)
+![User Facts showing top users, clients, and transcoding activity](docs/images/emby-user-facts2.png)
 
 *User Facts: watch time, top users, frequently used clients, and transcoding activity.*
 

@@ -53,7 +53,7 @@
     <EmbeddedResource Include="Configuration/*.js" />
     <EmbeddedResource Include="Configuration/changelog.json" />
     <EmbeddedResource Include="../../README.md" LogicalName="EmbyInsights.README.md" />
-    <EmbeddedResource Include="../../thumb.png" LogicalName="EmbyInsights.thumb.png" />
+    <EmbeddedResource Include="../../assets/thumb.png" LogicalName="EmbyInsights.thumb.png" />
     <Content Include="WebClientExtension/**/*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

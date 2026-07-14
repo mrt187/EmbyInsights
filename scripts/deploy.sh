@@ -25,7 +25,7 @@ if [[ -z "$HOST" || -z "$PLUGIN_DIR" ]]; then
   exit 2
 fi
 
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/.."
 
 DLL="src/EmbyInsights.Plugin/bin/Release/net8.0/EmbyInsights.Plugin.dll"
 TAB_SCRIPT="src/EmbyInsights.Plugin/WebClientExtension/statistics-tab.global.js"
